@@ -1,0 +1,203 @@
+# image based on ubuntu 22.04 with full support nvidia cuda with version 11.7.0
+FROM nvidia/cuda:11.7.0-base-ubuntu22.04
+
+# docker specific tweaks, see
+# https://github.com/docker/docker/blob/9a9fc01af8fb5d98b8eec0740716226fadb3735c/contrib/mkimage/debootstrap#L85-L105
+RUN echo 'DPkg::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };' > /etc/apt/apt.conf.d/docker-clean \
+    && echo 'APT::Update::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };' >> /etc/apt/apt.conf.d/docker-clean \
+    && echo 'Dir::Cache::pkgcache ""; Dir::Cache::srcpkgcache "";' >> /etc/apt/apt.conf.d/docker-clean
+
+# update package repository information and install with no prompt
+# bash-completion -> bash auto-complete
+# build-essential -> compiler
+# byobu -> terminal multiplexer
+# ca-certificates -> certificate manager
+# clang-format -> code formatter
+# curl -> internet commuincation library
+# feh -> image viewer
+# git -> version control
+# gnupg2 -> encryption
+# keyboard-configuration -> keyboard configuration
+# locales -> configure locale
+# libgl1-mesa-dev -> mujoco-py dependancy
+# libgl1-mesa-glx -> mujoco-py dependancy
+# libglew-dev -> mujoco-py dependancy
+# libglfw3 -> mujoco-py, imgui dependancy
+# libglfw3-dev -> imgui dependency
+# libosmesa6-dev -> mujoco-py dependancy
+# lsb-release -> linux standard base
+# net-tools -> network configurator
+# nvidia-cuda-toolkit -> for using gpu
+# patchelf -> mujoco-py dependancy
+# python3-pip -> python package manager
+# sudo -> executing commands as root
+# swig -> wrapper for C/C++ to connect to scripting language
+# tmux -> terminal multiplexer
+# tzdata -> timezone
+# vim -> command line text editor
+# wget -> downloader
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+    bash-completion \
+    build-essential \
+    byobu \
+    ca-certificates \
+    clang-format \
+    curl \
+    feh \
+    git \
+    gnupg2 \
+    keyboard-configuration \
+    locales \
+    libgl1-mesa-dev \
+    libgl1-mesa-glx \
+    libglew-dev \
+    libglfw3 \
+    libglfw3-dev \
+    libosmesa6-dev \
+    lsb-release \
+    net-tools \
+    nvidia-cuda-toolkit \
+    patchelf \
+    python3-pip \
+    sudo \
+    swig \
+    tmux \
+    tzdata \
+    vim \
+    wget \
+    && apt-get clean && apt-get autoremove
+
+# configure timezone to taipei
+# configure locale to en_US_UTF-8 and export it once
+RUN TZ=Asia/Taipei \
+    && ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime \
+    && echo ${TZ} > /etc/timezone \
+    && dpkg-reconfigure -f noninteractive tzdata \
+    && locale-gen en_US en_US.UTF-8 \
+    && update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 \
+    && export LANG=en_US.UTF-8
+
+# add apt key for installing ros2
+# python3-colcon-common-extensions -> build ros2 workspace
+# python3-rosdep -> ros dependencies manager
+# ros-humble-controller-manager -> ros2 controller manager
+# ros-humble-desktop-full -> ros2
+# ros-humble-dynamixel-workbench-toolbox -> dynamixel driver
+# ros-humble-gazebo-ros-pkgs -> gazebo
+# ros-humble-gazebo-ros2-control -> gazebo ros2 control
+# ros-humble-joint-state-publisher-gui -> ros2 gui joint state publisher
+# ros-humble-moveit -> robot kinematic controller
+# ros-humble-realsense2-description -> used in the example of dynamixel-hradware
+# ros-humble-ros2-control -> ros2 control
+# ros-humble-ros2-controllers -> ros2 controllers
+# ros-humble-ros2-control-test-assets -> test assets for ros2_control
+# ros-humble-ros2-socketcan -> ros2 can driver
+# ros-humble-rqt-joint-trajectory-controller -> controlling joint using gui
+# ros-humble-teleop-twist-keyboard -> ros2 keyboard control
+# initialize and update ros dependencies as root
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main" | tee /etc/apt/sources.list.d/ros2.list > /dev/null \
+    && apt update && apt-get install -y \
+    python3-colcon-common-extensions \
+    python3-rosdep \
+    ros-humble-controller-manager \
+    ros-humble-desktop-full \
+    ros-humble-dynamixel-workbench-toolbox \
+    ros-humble-gazebo-ros-pkgs \
+    ros-humble-gazebo-ros2-control \
+    ros-humble-joint-state-publisher-gui \
+    ros-humble-moveit \
+    ros-humble-realsense2-description \
+    ros-humble-ros2-control \
+    ros-humble-ros2-controllers \
+    ros-humble-ros2-control-test-assets \
+    ros-humble-ros2-socketcan \
+    ros-humble-rqt-joint-trajectory-controller \
+    ros-humble-teleop-twist-keyboard \
+    && apt-get clean && apt-get autoremove \
+    && rosdep init \
+    && rosdep update
+
+# install wiringPi
+RUN git clone https://github.com/WiringPi/WiringPi.git \
+    && cd WiringPi \
+    && ./build \
+    && cd .. \
+    && rm -rf WiringPi
+
+# adding user "docker" on host
+# password "docker" for user 'root' and 'docker'
+RUN useradd --create-home --shell /bin/bash docker \
+    && usermod -aG sudo,dialout docker \
+    && echo 'docker\ndocker' | passwd \
+    && echo 'docker\ndocker' | passwd docker
+
+# install micro ros
+RUN mkdir -p /home/docker/microros_ws/src \
+    && bash -c "source /opt/ros/humble/setup.bash \
+        && cd /home/docker/microros_ws \
+        && git clone -b humble https://github.com/micro-ROS/micro_ros_setup.git src/micro_ros_setup \
+        && rosdep install --from-paths src --ignore-src -y \
+        && colcon build --symlink-install \
+        && source install/setup.bash \
+        && ros2 run micro_ros_setup create_agent_ws.sh \
+        && ros2 run micro_ros_setup build_agent.sh"
+
+# change to user "docker" and change to home directory
+USER docker
+ENV USER docker
+WORKDIR /home/docker
+
+# update ros dependencies in non-user directory
+# using bash warpper when managing ros for avoiding wierd problems
+# prebuild ws once
+# download micro ros setup repository
+# build microros_ws
+# setup micro ros agent
+RUN rosdep update \
+    && mkdir -p ws/src\
+    && bash -c "source /opt/ros/humble/setup.bash \
+        && cd ws \
+        && colcon build --symlink-install"
+
+# install mujoco
+RUN wget https://github.com/deepmind/mujoco/releases/download/2.1.0/mujoco210-linux-x86_64.tar.gz \
+    && tar -xvf mujoco210-linux-x86_64.tar.gz && rm mujoco210-linux-x86_64.tar.gz \ 
+    && mkdir -p .mujoco/mujoco210 && mv mujoco210 .mujoco/
+
+# install python libraries in non-root to prevent permission problems
+# envpool -> simulating envrionment manager (but faster than opanAI-gym)
+# gym[mujoco] -> simulating envrionment manager for mujoco (may be replaced by envpool)
+# mujoco-py -> bindings for mujoco that's required for opneAI-gym
+# pygame -> simulation environment for openAI gym
+# torch torchvision torchaudio visdom -> machine learing engine
+# tqdm -> progress bar
+RUN pip3 install envpool \
+    gym[mujoco] \
+    mujoco-py \
+    pygame \
+    torch torchvision torchaudio visdom \
+    tqdm
+
+# copy .bashrc for executing it everytime attaching to the container and modify it to
+# export LANG=en_US.UTF-8 -> use en_US.UTF-8 locale everytime
+# export PATH=:${PATH}:~/.local/bin -> add local(user specific) python library path to PATH environment variable
+# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/docker/.mujoco/mujoco210/bin -> mujoco environment variable
+# export LD_PRELOAD=$LD_PRELOAD:/usr/lib/x86_64-linux-gnu/libGLEW.so -> mujoco environment variable
+# source /opt/ros/humble/setup.bash -> source ros
+# source /usr/share/colcon_cd/function/colcon_cd.sh -> setup colcon_cd
+# export _colcon_cd_root=/opt/ros/humble/ -> setup colcon_cd
+# source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash -> colcon tab completion
+# source ~/ws/install/setup.bash -> source ws
+RUN cp /etc/skel/.bashrc /home/docker \
+    && echo 'export LANG=en_US.UTF-8' >> ~/.bashrc \
+    && echo 'export PATH=:${PATH}:~/.local/bin' >> ~/.bashrc \
+    && echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/docker/.mujoco/mujoco210/bin' >> ~/.bashrc \
+    && echo 'export LD_PRELOAD=$LD_PRELOAD:/usr/lib/x86_64-linux-gnu/libGLEW.so' >> ~/.bashrc \
+    && echo 'source /opt/ros/humble/setup.bash' >> ~/.bashrc \
+    && echo 'source /usr/share/colcon_cd/function/colcon_cd.sh' >> ~/.bashrc \
+    && echo 'export _colcon_cd_root=/opt/ros/humble/' >> ~/.bashrc \
+    && echo 'source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash' >> ~/.bashrc \
+    && echo 'source ~/microros_ws/install/setup.bash' >> ~/.bashrc \
+    && echo 'source ~/ws/install/setup.bash' >> ~/.bashrc

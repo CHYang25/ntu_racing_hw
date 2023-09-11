@@ -1,0 +1,54 @@
+# image based on ubuntu 22.04
+FROM ros:humble-ros-base-jammy
+
+# docker specific tweaks, see
+# https://github.com/docker/docker/blob/9a9fc01af8fb5d98b8eec0740716226fadb3735c/contrib/mkimage/debootstrap#L85-L105
+RUN echo 'DPkg::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };' > /etc/apt/apt.conf.d/docker-clean \
+    && echo 'APT::Update::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };' >> /etc/apt/apt.conf.d/docker-clean \
+    && echo 'Dir::Cache::pkgcache ""; Dir::Cache::srcpkgcache "";' >> /etc/apt/apt.conf.d/docker-clean
+
+# update package repository information and install with no prompt
+# bash-completion -> bash auto-complete
+# htop -> system monitor
+# iproute2 -> network configurator
+# net-tools -> network configurator
+# python3-pip -> python3 package manager
+# python3-trasnforms3d -> dependency for nmea_navsat_driver
+# tmux -> terminal multiplexer
+# vim -> command line text editor
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+    bash-completion \
+    htop \
+    iproute2 \
+    net-tools \
+    python3-pip \
+    python3-trasnforms3d \
+    tmux \
+    vim \
+    && apt-get clean && apt-get autoremove
+
+# install wiringPi
+RUN git clone https://github.com/WiringPi/WiringPi.git \
+    && cd WiringPi \
+    && ./build \
+    && cd .. \
+    && rm -rf WiringPi
+
+# switch to root home directory
+ENV USER root
+WORKDIR /root
+
+# prebuild ws once, using bash warpper for avoiding wierd problems
+RUN bash -c 'source /opt/ros/humble/setup.bash && mkdir -p ws/src && cd ws && colcon build --symlink-install'
+
+# export PATH=:${PATH}:~/.local/bin -> add local(user specific) python library path to PATH environment variable
+# source /usr/share/colcon_cd/function/colcon_cd.sh -> setup colcon_cd
+# export _colcon_cd_root=/opt/ros/${ROS_DISTRO}/ -> setup colcon_cd
+# source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash -> colcon tab completion
+# source ~/ws/install/setup.bash -> source ws
+RUN echo 'export PATH=:${PATH}:~/.local/bin' >> ~/.bashrc \
+    && echo 'source /usr/share/colcon_cd/function/colcon_cd.sh' >> ~/.bashrc \
+    && echo 'export _colcon_cd_root=/opt/ros/${ROS_DISTRO}/' >> ~/.bashrc \
+    && echo 'source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash' >> ~/.bashrc \
+    && echo 'source ~/ws/install/setup.bash' >> ~/.bashrc

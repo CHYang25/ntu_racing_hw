@@ -1,0 +1,81 @@
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_docker_packages_ros2_hw_ws_src_ros2_homework2_README_autotoc_md1}{}\doxysection{Part 1}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_docker_packages_ros2_hw_ws_src_ros2_homework2_README_autotoc_md1}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_docker_packages_ros2_hw_ws_src_ros2_homework2_README_autotoc_md2}{}\doxysubsection{Question 1-\/1}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_docker_packages_ros2_hw_ws_src_ros2_homework2_README_autotoc_md2}
+ROS2 topic communication is a special term of inter-\/process communication. It\textquotesingle{}s like a communication tunnel for two nodes(two processes) in the ROS2 graph to send or to recieve messages, such that they can react according to them. Graphically speaking, topics are like edges between two nodes. There\textquotesingle{}re also 3 other communication methods for ROS2 nodes, and topic is the easiest model.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_docker_packages_ros2_hw_ws_src_ros2_homework2_README_autotoc_md3}{}\doxysubsection{Question 1-\/2}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_docker_packages_ros2_hw_ws_src_ros2_homework2_README_autotoc_md3}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#include "{}rclcpp/rclcpp.hpp"{}}
+\DoxyCodeLine{// Fill the missing line of code}
+\DoxyCodeLine{// Hint: include the ROS2 integer 32 bit library for messaging}
+\DoxyCodeLine{\#include "{}std\_msgs/msg/int32.hpp"{}}
+\DoxyCodeLine{}
+\DoxyCodeLine{int main(int argc, char** argv)}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{    // parse the command line arguments such as node names, or package names, or executable names}
+\DoxyCodeLine{    rclcpp::init(argc, argv); // Explain this line}
+\DoxyCodeLine{    // this creates an node called "{}publisher\_node"{}}
+\DoxyCodeLine{    auto node = rclcpp::Node::make\_shared("{}publisher\_node"{}); // Explain this line}
+\DoxyCodeLine{    // this creates a topic which takes std\_msgs::msg::Int32 type, }
+\DoxyCodeLine{    // and topic's name is "{}count\_values"{}, and the message backup queue size is set to 10}
+\DoxyCodeLine{    auto publisher = node-\/>create\_publisher<std\_msgs::msg::Int32>("{}count\_values"{}, 10); // Explalin this line}
+\DoxyCodeLine{    }
+\DoxyCodeLine{    // }
+\DoxyCodeLine{    rclcpp::Rate loop\_rate(1);}
+\DoxyCodeLine{        }
+\DoxyCodeLine{    int count = 1;}
+\DoxyCodeLine{    while (rclcpp::ok() \&\& count <= 5)}
+\DoxyCodeLine{    \{}
+\DoxyCodeLine{        auto msg = std\_msgs::msg::Int32();}
+\DoxyCodeLine{        // Fill the missing line of code}
+\DoxyCodeLine{        // Hint: makes the content of "{}msg"{} to be the value of "{}count"{} variable}
+\DoxyCodeLine{        msg.data = count;}
+\DoxyCodeLine{}
+\DoxyCodeLine{        publisher-\/>publish(msg);}
+\DoxyCodeLine{        // This line is like fprintf function, which publish the message to the node's logger}
+\DoxyCodeLine{        RCLCPP\_INFO(node-\/>get\_logger(), "{}Publishing: \%d"{}, msg.data); // Explain this line}
+\DoxyCodeLine{        // Fill the missing line of code}
+\DoxyCodeLine{        // Hint: execute the callback function under the "{}node"{} node}
+\DoxyCodeLine{}
+\DoxyCodeLine{        loop\_rate.sleep();}
+\DoxyCodeLine{        count++;}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{    }
+\DoxyCodeLine{    rclcpp::shutdown();}
+\DoxyCodeLine{    return 0;    }
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_docker_packages_ros2_hw_ws_src_ros2_homework2_README_autotoc_md4}{}\doxysection{Part 2}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_docker_packages_ros2_hw_ws_src_ros2_homework2_README_autotoc_md4}
+After finishing {\ttfamily stroke\+\_\+to\+\_\+pwm\+\_\+node.\+cpp}, colcon build it and source the setup file. After that,
+\begin{DoxyEnumerate}
+\item In the first terminal, run 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 run ros2\_homework2 stroke\_to\_pwm\_node}
+
+\end{DoxyCode}
+
+\item In the second terminal, run 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 run ros2\_homework2 motor\_node}
+
+\end{DoxyCode}
+
+\item In the third terminal, run 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 bag record /motor\_node/motor\_revs}
+
+\end{DoxyCode}
+
+\item In the forth terminal, run 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{rqt\_graph}
+
+\end{DoxyCode}
+
+\item In the fifth terminal, run 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{cd ws/src/hw\_ws/src/ros2\_homework2/bag\_files}
+\DoxyCodeLine{ros2 bag play rosbag2\_2023\_08\_22-\/09\_00\_33}
+
+\end{DoxyCode}
+ Then, everything would start running \+:D 
+\end{DoxyEnumerate}

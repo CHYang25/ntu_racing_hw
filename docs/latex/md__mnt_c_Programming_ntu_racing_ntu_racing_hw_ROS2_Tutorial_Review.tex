@@ -1,0 +1,2495 @@
+There\textquotesingle{}s a typo in the docker image file \textquotesingle{}ros2\+\_\+host\textquotesingle{}
+
+After the configuration of the docker, I started going through the tutorial.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md134}{}\doxysection{Beginners\+: CLI Tools}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md134}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md135}{}\doxysubsection{Using turtlesim, ros2, and rqt}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md135}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md136}{}\doxysubsubsection{turtlesim}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md136}
+Turtlesim is a simulator illustrating the functionality of ROS2 on a robot, which is helpful for me to learn ROS2. To install it, run this inside the container\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{sudo apt update}
+\DoxyCodeLine{sudo apt install ros-\/humble-\/turtlesim}
+
+\end{DoxyCode}
+ (ps, the sudo password should be {\ttfamily docker} according to \href{https://github.com/NTURacingTeam/docker}{\texttt{ NTURacing\+Team/docker}})
+
+The package is installed\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~\$ ros2 pkg executables turtlesim}
+\DoxyCodeLine{turtlesim draw\_square}
+\DoxyCodeLine{turtlesim mimic}
+\DoxyCodeLine{turtlesim turtle\_teleop\_key}
+\DoxyCodeLine{turtlesim turtlesim\_node}
+
+\end{DoxyCode}
+
+
+Then, start the simulator. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 run turtlesim turtlesim\_node}
+
+\end{DoxyCode}
+ 
+
+We can now use the turtlesim. \hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md137}{}\doxysubsubsection{rqt}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md137}
+According to ROSWiki, the introduction to rqt is described as following\+: \begin{quote}
+rqt is a software framework of ROS that implements the various GUI tools in the form of plugins. One can run all the existing GUI tools as dockable windows within rqt! The tools can still run in a traditional standalone method, but rqt makes it easier to manage all the various windows on the screen at one moment. \end{quote}
+We also install that in our container by {\ttfamily sudo apt install $\sim$nros-\/humble-\/rqt$\ast$}. 
+
+Now, I started to use the rqt following the tutorial. Note that, the turtlesim node should be running to reproduce what is shown on the tutorial. The turtlesim is a dockable window that is referred to as a plugin.
+
+Spawn the second turtle ~\newline
+ 
+
+Set pen of turtle1 ~\newline
+ 
+
+Remapping the topic ~\newline
+ The topic is the edge between nodes. Since by default, the command would build the teleop\+\_\+key to turtle1. So we need to remap the topic between the teleop\+\_\+key to turtle2. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 run turtlesim turtle\_teleop\_key -\/-\/ros-\/args -\/-\/remap turtle1/cmd\_vel:=turtle2/cmd\_vel}
+
+\end{DoxyCode}
+ Turtle2 has moved successfully ~\newline
+ \hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md138}{}\doxysubsection{Nodes}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md138}
+Control a modular function. Nodes can communicate with each other via\+:
+\begin{DoxyEnumerate}
+\item topics
+\item services
+\item actions
+\item parameters
+\end{DoxyEnumerate}
+
+This is how to run an executable in ros2 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 run <package\_name> <executable\_name>}
+
+\end{DoxyCode}
+ The previous examples have shown that {\ttfamily turtlesim} is the package name, and {\ttfamily trutlesim\+\_\+node} is the executable launched.
+
+To check what node is currently running, command {\ttfamily ros2 node list}. This is the result after launching the turtlesim node and the teleop\+\_\+key node\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~\$ ros2 node list}
+\DoxyCodeLine{/teleop\_turtle}
+\DoxyCodeLine{/turtlesim}
+
+\end{DoxyCode}
+ To check out the information of one node, command {\ttfamily ros2 node info $<$node\+\_\+name$>$}. This is the result after launching the turtlesim node and checking out its information. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~\$ ros2 node info /turtlesim}
+\DoxyCodeLine{/turtlesim}
+\DoxyCodeLine{  Subscribers:}
+\DoxyCodeLine{    /parameter\_events: rcl\_interfaces/msg/ParameterEvent}
+\DoxyCodeLine{    /turtle1/cmd\_vel: geometry\_msgs/msg/Twist}
+\DoxyCodeLine{  Publishers:}
+\DoxyCodeLine{    /parameter\_events: rcl\_interfaces/msg/ParameterEvent}
+\DoxyCodeLine{    /rosout: rcl\_interfaces/msg/Log}
+\DoxyCodeLine{    /turtle1/color\_sensor: turtlesim/msg/Color}
+\DoxyCodeLine{    /turtle1/pose: turtlesim/msg/Pose}
+\DoxyCodeLine{  Service Servers:}
+\DoxyCodeLine{    /clear: std\_srvs/srv/Empty}
+\DoxyCodeLine{    /kill: turtlesim/srv/Kill}
+\DoxyCodeLine{    /reset: std\_srvs/srv/Empty}
+\DoxyCodeLine{    /spawn: turtlesim/srv/Spawn}
+\DoxyCodeLine{    /turtle1/set\_pen: turtlesim/srv/SetPen}
+\DoxyCodeLine{    /turtle1/teleport\_absolute: turtlesim/srv/TeleportAbsolute}
+\DoxyCodeLine{    /turtle1/teleport\_relative: turtlesim/srv/TeleportRelative}
+\DoxyCodeLine{    /turtlesim/describe\_parameters: rcl\_interfaces/srv/DescribeParameters}
+\DoxyCodeLine{    /turtlesim/get\_parameter\_types: rcl\_interfaces/srv/GetParameterTypes}
+\DoxyCodeLine{    /turtlesim/get\_parameters: rcl\_interfaces/srv/GetParameters}
+\DoxyCodeLine{    /turtlesim/list\_parameters: rcl\_interfaces/srv/ListParameters}
+\DoxyCodeLine{    /turtlesim/set\_parameters: rcl\_interfaces/srv/SetParameters}
+\DoxyCodeLine{    /turtlesim/set\_parameters\_atomically: rcl\_interfaces/srv/SetParametersAtomically}
+\DoxyCodeLine{  Service Clients:}
+\DoxyCodeLine{}
+\DoxyCodeLine{  Action Servers:}
+\DoxyCodeLine{    /turtle1/rotate\_absolute: turtlesim/action/RotateAbsolute}
+\DoxyCodeLine{  Action Clients:}
+
+\end{DoxyCode}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md139}{}\doxysubsection{Topics}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md139}
+To visualize the graph of the ros2, use {\ttfamily rqt\+\_\+graph}. Here\textquotesingle{}s the result\+: 
+
+To check what node is currently running, command {\ttfamily ros2 topic list -\/t}. This is the result after launching the turtlesim node and the teleop\+\_\+key node\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~\$ ros2 topic list -\/t}
+\DoxyCodeLine{/parameter\_events [rcl\_interfaces/msg/ParameterEvent]}
+\DoxyCodeLine{/rosout [rcl\_interfaces/msg/Log]}
+\DoxyCodeLine{/turtle1/cmd\_vel [geometry\_msgs/msg/Twist]}
+\DoxyCodeLine{/turtle1/color\_sensor [turtlesim/msg/Color]}
+\DoxyCodeLine{/turtle1/pose [turtlesim/msg/Pose]}
+
+\end{DoxyCode}
+
+
+To see the data being published on a topic, command {\ttfamily ros2 topic echo $<$topic\+\_\+name$>$}. Check out the data on the topic \char`\"{}/turtle1/cmd\+\_\+vel\char`\"{}, and here\textquotesingle{}s the result\+: (I pressed the right arrow then the up arrow to the teleop\+\_\+turtle console, so we can tell that the turtle would first recieve an rotation command then a forward-\/moving command) 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{linear:}
+\DoxyCodeLine{  x: 0.0}
+\DoxyCodeLine{  y: 0.0}
+\DoxyCodeLine{  z: 0.0}
+\DoxyCodeLine{angular:}
+\DoxyCodeLine{  x: 0.0}
+\DoxyCodeLine{  y: 0.0}
+\DoxyCodeLine{  z: -\/2.0}
+\DoxyCodeLine{-\/-\/-\/}
+\DoxyCodeLine{linear:}
+\DoxyCodeLine{  x: 2.0}
+\DoxyCodeLine{  y: 0.0}
+\DoxyCodeLine{  z: 0.0}
+\DoxyCodeLine{angular:}
+\DoxyCodeLine{  x: 0.0}
+\DoxyCodeLine{  y: 0.0}
+\DoxyCodeLine{  z: 0.0}
+\DoxyCodeLine{-\/-\/-\/}
+
+\end{DoxyCode}
+
+
+Also we can observe that the echo command is functioning with rqt\+\_\+graph visualization. ~\newline
+ 
+
+To check out the topic info, use {\ttfamily ros2 topic info $<$topic\+\_\+name$>$}. Here\textquotesingle{}s the result\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~ros2 topic info /turtle1/cmd\_vel}
+\DoxyCodeLine{Type: geometry\_msgs/msg/Twist}
+\DoxyCodeLine{Publisher count: 1}
+\DoxyCodeLine{Subscription count: 1}
+
+\end{DoxyCode}
+ (Every topic has publishers and subscriptions as inputs and outputs, with nodes at its both ends)
+
+What is the {\ttfamily Type} property? It shows that the topic has the type Twist, which is in the msg file inside the geometry\+\_\+msgs package. The command {\ttfamily ros2 interface show geometry\+\_\+msgs/msg/\+Twist} gives us 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\# This expresses velocity in free space broken into its linear and angular parts.}
+\DoxyCodeLine{}
+\DoxyCodeLine{    Vector3  linear}
+\DoxyCodeLine{            float64 x}
+\DoxyCodeLine{            float64 y}
+\DoxyCodeLine{            float64 z}
+\DoxyCodeLine{    Vector3  angular}
+\DoxyCodeLine{            float64 x}
+\DoxyCodeLine{            float64 y}
+\DoxyCodeLine{            float64 z}
+
+\end{DoxyCode}
+ The word interface could be related to the java term interface.
+
+To publish data onto a topic, use {\ttfamily ros2 topic pub $<$topic\+\_\+name$>$ $<$msg\+\_\+type$>$ \textquotesingle{}$<$args$>$\textquotesingle{}}. The result is\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~\$ ros2 topic pub -\/-\/once /turtle1/cmd\_vel geometry\_msgs/msg/Twist "{}\{linear: \{x: 2.0, y: 0.0, z: 0.0\}, angular: \{x: 0.0, y: 0.0, z: 1.8\}\}"{}}
+\DoxyCodeLine{publisher: beginning loop}
+\DoxyCodeLine{publishing \#1: geometry\_msgs.msg.Twist(linear=geometry\_msgs.msg.Vector3(x=2.0, y=0.0, z=0.0), angular=geometry\_msgs.msg.Vector3(x=0.0, y=0.0, z=1.8))}
+
+\end{DoxyCode}
+  Instead of using the {\ttfamily teleop\+\_\+key} node to publish controlling data, we use the {\ttfamily ros2 topic pub} command node to control that turtle by publishing the arguments to that specific topic.
+
+The {\ttfamily -\/-\/once} option tells the node to publish once then terminate.
+
+We can make the trutle running in a circle with {\ttfamily ros2 topic pub -\/-\/rate 1 /turtle1/cmd\+\_\+vel geometry\+\_\+msgs/msg/\+Twist \char`\"{}\{linear\+: \{x\+: 2.\+0, y\+: 0.\+0, z\+: 0.\+0\}, angular\+: \{x\+: 0.\+0, y\+: 0.\+0, z\+: 1.\+8\}\}\char`\"{}}, where {\ttfamily -\/-\/rate 1} option means to publish such data under 1 Hz frequency. ~\newline
+ 
+
+With the publishing node(/\+\_\+ros2cli\+\_\+805), and the echo node(/\+\_\+ros2cli\+\_\+877), the graph shoud look like this\+: ~\newline
+ 
+
+To view the rate at which data is published, use {\ttfamily ros2 topic hz $<$topic\+\_\+name$>$}. Recalled that we use the pub command to publish data onto topic {\ttfamily /turtle1/cmd\+\_\+vel} with rate 1. So that the result should look like this\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~\$ ros2 topic hz /turtle1/cmd\_vel}
+\DoxyCodeLine{average rate: 1.000}
+\DoxyCodeLine{        min: 0.999s max: 1.000s std dev: 0.00057s window: 3}
+\DoxyCodeLine{average rate: 1.000}
+\DoxyCodeLine{        min: 0.999s max: 1.000s std dev: 0.00056s window: 4}
+\DoxyCodeLine{average rate: 1.000}
+\DoxyCodeLine{        min: 0.999s max: 1.000s std dev: 0.00053s window: 5}
+\DoxyCodeLine{.}
+\DoxyCodeLine{.}
+\DoxyCodeLine{.}
+
+\end{DoxyCode}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md140}{}\doxysubsection{Services}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md140}
+Nodes could also communicate through services as well. It\textquotesingle{}s based on a call-\/and-\/response model.
+
+To show the service list, use {\ttfamily ros2 service list}. Here\textquotesingle{}s the result 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~\$ ros2 service list}
+\DoxyCodeLine{/clear}
+\DoxyCodeLine{/kill}
+\DoxyCodeLine{/reset}
+\DoxyCodeLine{/spawn}
+\DoxyCodeLine{/teleop\_turtle/describe\_parameters}
+\DoxyCodeLine{/teleop\_turtle/get\_parameter\_types}
+\DoxyCodeLine{/teleop\_turtle/get\_parameters}
+\DoxyCodeLine{/teleop\_turtle/list\_parameters}
+\DoxyCodeLine{/teleop\_turtle/set\_parameters}
+\DoxyCodeLine{/teleop\_turtle/set\_parameters\_atomically}
+\DoxyCodeLine{/turtle1/set\_pen}
+\DoxyCodeLine{/turtle1/teleport\_absolute}
+\DoxyCodeLine{/turtle1/teleport\_relative}
+\DoxyCodeLine{/turtlesim/describe\_parameters}
+\DoxyCodeLine{/turtlesim/get\_parameter\_types}
+\DoxyCodeLine{/turtlesim/get\_parameters}
+\DoxyCodeLine{/turtlesim/list\_parameters}
+\DoxyCodeLine{/turtlesim/set\_parameters}
+\DoxyCodeLine{/turtlesim/set\_parameters\_atomically}
+
+\end{DoxyCode}
+ Recall the part about rqt, that service drop list is shown here. (ps, the parameters will be in the next part)
+
+I realized that recording the tutorial step by step is time-\/consuming. From now on, I\textquotesingle{}ll only collect those worth noting.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md141}{}\doxysubsection{Services}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md141}
+Using {\ttfamily ros2 interface show $<$type\+\_\+name$>$} can show the information about that type. The \char`\"{}-\/-\/-\/\char`\"{} separates the request structure (above) from the response structure (below). 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 interface show turtlesim/srv/Spawn}
+\DoxyCodeLine{}
+\DoxyCodeLine{// then return}
+\DoxyCodeLine{}
+\DoxyCodeLine{float32 x}
+\DoxyCodeLine{float32 y}
+\DoxyCodeLine{float32 theta}
+\DoxyCodeLine{string name \# Optional.  A unique name will be created and returned if this is empty}
+\DoxyCodeLine{-\/-\/-\/}
+\DoxyCodeLine{string name}
+
+\end{DoxyCode}
+
+
+Another example\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 service call /spawn turtlesim/srv/Spawn "{}\{x: 2, y: 2, theta: 0.2, name: ''\}"{}}
+
+\end{DoxyCode}
+ It can spawn a turtle using the service. But what\textquotesingle{}s the deifferene between such service call and the publishing call? Quoted from the official website\+: \begin{quote}
+Nodes can communicate using services in ROS 2. Unlike a topic -\/ a one way communication pattern where a node publishes information that can be consumed by one or more subscribers -\/ a service is a request/response pattern where a client makes a request to a node providing the service and the service processes the request and generates a response. \end{quote}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md142}{}\doxysubsection{Parameters}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md142}
+\begin{quote}
+A parameter is a configuration value of a node. You can think of parameters as node settings. \end{quote}
+Change the background color of turtle sim\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~\$ ros2 param set /turtlesim background\_r 150}
+\DoxyCodeLine{Set parameter successful}
+
+\end{DoxyCode}
+ 
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{> Dumping parameters comes in handy if you want to reload the node with the same parameters in the future.}
+\DoxyCodeLine{To load it from the future, use ```ros2 param load <name> <file>}
+
+\end{DoxyCode}
+ If you want to load the parameters while starting a node -\/$>$ {\ttfamily ros2 run $<$package\+\_\+name$>$ $<$executable\+\_\+name$>$ -\/-\/ros-\/args -\/-\/params-\/file $<$file\+\_\+name$>$}\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md143}{}\doxysubsection{Actions}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md143}
+\begin{quote}
+They consist of three parts\+: a goal, feedback, and a result. \end{quote}
+
+
+To check the information of one action, use\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{To see the action list of a node, use:}
+\DoxyCodeLine{```ros2 action list -\/t```, -\/t is for showing the action type.}
+\DoxyCodeLine{}
+\DoxyCodeLine{We also can use interface show to acknowledge the action data type within. }
+\DoxyCodeLine{>The section of this message above the first -\/-\/-\/ is the structure (data type and name) of the goal request. The next section is the structure of the result. The last section is the structure of the feedback.}
+\DoxyCodeLine{}
+\DoxyCodeLine{To send a goal of an action: ```ros2 action send\_goal <action\_name> <action\_type> <values>}
+
+\end{DoxyCode}
+
+
+\begin{quote}
+A robot system would likely use actions for navigation. An action goal could tell a robot to travel to a position. While the robot navigates to the position, it can send updates along the way (i.\+e. feedback), and then a final result message once it’s reached its destination. \end{quote}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md144}{}\doxysubsection{rqt\+\_\+console}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md144}
+$>$Fatal messages indicate the system is going to terminate to try to protect itself from detriment.
+
+$>$Error messages indicate significant issues that won’t necessarily damage the system, but are preventing it from functioning properly.
+
+$>$Warn messages indicate unexpected activity or non-\/ideal results that might represent a deeper issue, but don’t harm functionality outright.
+
+$>$Info messages indicate event and status updates that serve as a visual verification that the system is running as expected.
+
+$>$Debug messages detail the entire step-\/by-\/step process of the system execution.
+
+These are the 5 severity levels of messages. The severity filter would filter out those with less severity level than the chosen option.
+
+To set the severity level\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 run turtlesim turtlesim\_node -\/-\/ros-\/args -\/-\/log-\/level WARN}
+
+\end{DoxyCode}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md145}{}\doxysubsection{Record Topics}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md145}
+To record topic data\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 bag record <topic\_name>}
+
+\end{DoxyCode}
+ It should create a directory {\ttfamily rosbag2\+\_\+year\+\_\+month\+\_\+day-\/hour\+\_\+minute\+\_\+second} with a file {\ttfamily metadata.\+yaml} that records the data.
+
+To record multiple topics, just list them out. -\/o option is for naming\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 bag record -\/o subset /turtle1/cmd\_vel /turtle1/pose}
+
+\end{DoxyCode}
+
+
+To check the bag info 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 bag info <bag\_file\_name>}
+
+\end{DoxyCode}
+
+
+To replay what just recorded, use\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 bag play <bag\_file\_name>}
+
+\end{DoxyCode}
+
+
+$>$Because the subset file recorded the /turtle1/pose topic, the ros2 bag play command won’t quit for as long as you had turtlesim running, even if you weren’t moving.\+This is because as long as the /turtlesim node is active, it publishes data on the /turtle1/pose topic at regular intervals. You may have noticed in the ros2 bag info example result above that the /turtle1/cmd\+\_\+vel topic’s Count information was only 9; that’s how many times we pressed the arrow keys while recording.\+Notice that /turtle1/pose has a Count value of over 3000; while we were recording, data was published on that topic 3000 times.\+To get an idea of how often position data is published, you can run the command\+:\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md146}{}\doxysection{Beginners\+: Client Libraries}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md146}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md147}{}\doxysubsection{Creating a wrokspace}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md147}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md148}{}\doxysubsubsection{Resolve dependencies}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md148}
+$>$Before building the workspace, you need to resolve the package dependencies. You may have all the dependencies already, but best practice is to check for dependencies every time you clone. You wouldn’t want a build to fail after a long wait only to realize that you have missing dependencies.
+
+To check the dependencies\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{rosdep install -\/i -\/-\/from-\/path src -\/-\/rosdistro humble -\/y}
+
+\end{DoxyCode}
+
+
+$>$Packages declare their dependencies in the package.\+xml file\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md149}{}\doxysubsubsection{Source the overlay}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md149}
+$>$In the new terminal, source your main ROS 2 environment as the “underlay”, so you can build the overlay “on top of” it\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\# source the underlay}
+\DoxyCodeLine{source /opt/ros/humble/setup.bash}
+\DoxyCodeLine{cd \string~/ws/src/ros2\_ws}
+\DoxyCodeLine{\# source the overlay}
+\DoxyCodeLine{source install/local\_setup.bash}
+
+\end{DoxyCode}
+ (The source command is just basically executing the setup file that build the ROS2 environment and the overlay package)
+
+or just run 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{source install/steup.bash}
+\DoxyCodeLine{\# it sources both ROS2 environment as underlay and the packages as overlay}
+
+\end{DoxyCode}
+
+
+Then run the turtlesim. To tell the concept of overlay and underlay, we should know whether the turtlesim we ran is from the package or from the original installation. To achieve that, we can modify the overlay.
+
+This is the result after modifying the source file and {\ttfamily colcon build} it again.
+
+
+
+\begin{quote}
+modifications in the overlay did not actually affect anything in the underlay \end{quote}
+$>$In this tutorial, you sourced your main ROS 2 distro install as your underlay, and created an overlay by cloning and building packages in a new workspace. The overlay gets prepended to the path, and takes precedence over the underlay, as you saw with your modified turtlesim. Using overlays is recommended for working on a small number of packages, so you don’t have to put everything in the same workspace and rebuild a huge workspace on every iteration.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md150}{}\doxysubsection{Creating a package}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md150}
+\begin{quote}
+A package is an organizational unit for your ROS 2 code. \end{quote}
+\begin{quote}
+Package creation in ROS 2 uses ament as its build system and colcon as its build tool. You can create a package using either CMake or Python, which are officially supported \end{quote}
+In a CMake package directory, it should include\+:
+\begin{DoxyEnumerate}
+\item {\ttfamily CMake\+Lists.\+txt} file that describes how to build the code within the package
+\item {\ttfamily include/$<$package\+\_\+name$>$} directory containing the public headers for the package
+\item {\ttfamily package.\+xml} file containing meta information about the package
+\item {\ttfamily src} directory containing the source code for the package
+\end{DoxyEnumerate}
+
+To create a new package in ros2\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 pkg create -\/-\/build-\/type ament\_cmake <package\_name>}
+
+\end{DoxyCode}
+
+
+
+\begin{DoxyCode}{0}
+
+\end{DoxyCode}
+ colcon build --packages-\/select my\+\_\+package 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{It's important to run ```source install/local\_setup.bash``` to add the workspace to the path, inorder to use the package executables.}
+\DoxyCodeLine{}
+\DoxyCodeLine{We should also customize the package.xml, inside the description tag, maintainer tag, and licenses tag.}
+\DoxyCodeLine{>Below the license tag, you will see some tag names ending with \_depend. This is where your package.xml would list its dependencies on other packages, for colcon to search for. }
+\DoxyCodeLine{}
+\DoxyCodeLine{\#\#\# C++ publisher and subscriber}
+\DoxyCodeLine{**Communicate through topics**}
+\DoxyCodeLine{}
+\DoxyCodeLine{To add dependencies, we should let cmake know what headers are needed. To do so, we should modify the ```package.xml``` file and ```CMakeLists.txt``` file, and add dependencies according to the headers included.}
+
+\end{DoxyCode}
+ \#include \char`\"{}rclcpp/rclcpp.\+hpp\char`\"{} \#include \char`\"{}std\+\_\+msgs/msg/string.\+hpp\char`\"{} 
+\begin{DoxyCode}{0}
+
+\end{DoxyCode}
+ $<$buildtool\+\_\+depend$>$ament\+\_\+cmake$<$/buildtool\+\_\+depend$>$ $<$depend$>$rclcpp$<$/depend$>$ $<$depend$>$std\+\_\+msgs$<$/depend$>$ 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(Note that the dependencies tags should be added after ament\_cmake)}
+
+\end{DoxyCode}
+ find\+\_\+package(ament\+\_\+cmake REQUIRED) find\+\_\+package(rclcpp REQUIRED) find\+\_\+package(std\+\_\+msgs REQUIRED) 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Also in ```CMakeLists.txt```, add this to run the code using ```ros2 run```:}
+
+\end{DoxyCode}
+ add\+\_\+executable(talker src/publisher\+\_\+member\+\_\+function.\+cpp) ament\+\_\+target\+\_\+dependencies(talker rclcpp std\+\_\+msgs) 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{And add this so that ```ros2 run``` can find the executables:}
+
+\end{DoxyCode}
+ install(TARGETS talker DESTINATION lib/\$\{PROJECT\+\_\+\+NAME\}) 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(talker is the executable name)}
+\DoxyCodeLine{}
+\DoxyCodeLine{>The main function is exactly the same, except now it spins the MinimalSubscriber node. For the publisher node, spinning meant starting the timer, but for the subscriber it simply means preparing to receive messages whenever they come.}
+\DoxyCodeLine{}
+\DoxyCodeLine{Then we also wget the subscriber code. Note that we don't need to modify the ```package.xml``` file, for the headers needed are the same. But we should modify the ```CMakeLists.txt``` file, for the cmake should capture the code.}
+
+\end{DoxyCode}
+add\+\_\+executable(listener src/subscriber\+\_\+member\+\_\+function.\+cpp) ament\+\_\+target\+\_\+dependencies(listener rclcpp std\+\_\+msgs)
+
+install(TARGETS talker listener DESTINATION lib/\$\{PROJECT\+\_\+\+NAME\}) 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Then run ```rosdep``` in the root of your workspace (ros2\_ws) to check for missing dependencies before building:}
+
+\end{DoxyCode}
+ rosdep install -\/i --from-\/path src --rosdistro humble -\/y 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Then use colcon to build the new package:}
+
+\end{DoxyCode}
+ colcon build --packages-\/select cpp\+\_\+pubsub 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Also, don't forget to source that bash inorder to find the executables.}
+
+\end{DoxyCode}
+ . install/setup.\+bash 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Then run it: (The package name is ```cpp\_pubsub```, and the node(executable) name is ```talker```)}
+
+\end{DoxyCode}
+ ros2 run cpp\+\_\+pubsub talker 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#\#\# C++ Client and Server}
+\DoxyCodeLine{**Communicate through services**}
+\DoxyCodeLine{> The structure of the request and response is determined by a ```.srv``` file.}
+\DoxyCodeLine{The ```.srv``` file in the following example looks like (defining the data type of the request and response):}
+
+\end{DoxyCode}
+ int64 a \hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md151}{}\doxysection{int64 b}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md151}
+int64 sum 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(example\_interfaces is the package that includes the .srv file)}
+\DoxyCodeLine{}
+\DoxyCodeLine{While creating a package, we can add the dependencies option to create the correct files by default.}
+
+\end{DoxyCode}
+ ros2 pkg create --build-\/type ament\+\_\+cmake cpp\+\_\+srvcli --dependencies rclcpp example\+\_\+interfaces 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Inside ```CmakeLists.txt```, note that although dependencies are built by the last command, we still need the ```add\_executable()``` macro generates an executable so that we can run it through ```ros2 run}
+
+\end{DoxyCode}
+ 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{add\_executable(server src/add\_two\_ints\_server.cpp)}
+\DoxyCodeLine{ament\_target\_dependencies(server rclcpp example\_interfaces)}
+
+\end{DoxyCode}
+ 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{install(TARGETS}
+\DoxyCodeLine{    server}
+\DoxyCodeLine{  DESTINATION lib/\$\{PROJECT\_NAME\})}
+
+\end{DoxyCode}
+ (ps that {\ttfamily RCLCPP\+\_\+\+INFO} is like {\ttfamily fprintf})
+
+Also, after finishing the client\textquotesingle{}s code, we should modify the {\ttfamily CMake\+Lists.\+txt} as well. After all, in the root workspace directory, we should check the dependencies by\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{rosdep install -\/i -\/-\/from-\/path src -\/-\/rosdistro humble -\/y}
+
+\end{DoxyCode}
+ Then build it with the following command (don\textquotesingle{}t forget to check the returned message that the colcon build was successful) 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{colcon build -\/-\/packages-\/select cpp\_srvcli}
+
+\end{DoxyCode}
+ Then, don\textquotesingle{}t forget to source the setup file so that the paths to those executables are added. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{source install/setup.bash}
+
+\end{DoxyCode}
+
+
+When running, we can notice that the server is continue running no matter there\textquotesingle{}s a client or not. When a client occurs, it recieve the request and return the response after processing.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md152}{}\doxysubsection{Creating custom msg and srv files}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md152}
+Remember that these types of files define the communication of two nodes in an ros2 graph, aka intefaces. One defines topics, and the other defines services.
+
+Inside {\ttfamily Sphere.\+msg}, it uses a message from another message package-\/{\ttfamily geometry\+\_\+msgs/\+Point}. (In the package geometry\+\_\+msgs, the msg named Point)
+
+After creating the msg files and srv files, modify {\ttfamily CMake\+Lists.\+txt} and {\ttfamily package.\+xml}. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{find\_package(geometry\_msgs REQUIRED)}
+\DoxyCodeLine{find\_package(rosidl\_default\_generators REQUIRED)}
+\DoxyCodeLine{}
+\DoxyCodeLine{rosidl\_generate\_interfaces(\$\{PROJECT\_NAME\}}
+\DoxyCodeLine{  "{}msg/Num.msg"{}}
+\DoxyCodeLine{  "{}msg/Sphere.msg"{}}
+\DoxyCodeLine{  "{}srv/AddThreeInts.srv"{}}
+\DoxyCodeLine{  DEPENDENCIES geometry\_msgs \# Add packages that above messages depend on, in this case geometry\_msgs for Sphere.msg}
+\DoxyCodeLine{)}
+
+\end{DoxyCode}
+ The find\+\_\+package is understandable. we need the {\ttfamily geometry\+\_\+msgs} package, for it\textquotesingle{}s used in the {\ttfamily Sphere.\+msg}. We need the {\ttfamily rosidl\+\_\+default\+\_\+generators}, for we need it to generate language-\/specific code (c++ in this case) from the msg or srv files. (ps rosidl stands for ros interface definition language)
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{<depend>geometry\_msgs</depend> \# The dependencies of the package interface it self}
+\DoxyCodeLine{<buildtool\_depend>rosidl\_default\_generators</buildtool\_depend> \# This is the dependencies of the buildtool}
+\DoxyCodeLine{<exec\_depend>rosidl\_default\_runtime</exec\_depend> \# this is the dependencies during runtime to use the interfaces}
+\DoxyCodeLine{<member\_of\_group>rosidl\_interface\_packages</member\_of\_group> \# this is the the package that my package should be associated with}
+
+\end{DoxyCode}
+ $>$Because the interfaces rely on rosidl\+\_\+default\+\_\+generators for generating language-\/specific code, you need to declare a build tool dependency on it. rosidl\+\_\+default\+\_\+runtime is a runtime or execution-\/stage dependency, needed to be able to use the interfaces later. The rosidl\+\_\+interface\+\_\+packages is the name of the dependency group that your package, tutorial\+\_\+interfaces, should be associated with, declared using the $<$member\+\_\+of\+\_\+group$>$ tag.
+
+Then colcon build, source the setup. Remember that we\textquotesingle{}ve check the interfaces before while we learned about topics. Now, we use the {\ttfamily ros2 interface show} command to see whether our interface is available or not. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 interface show tutorial\_interfaces/msg/Num}
+\DoxyCodeLine{}
+\DoxyCodeLine{\# return}
+\DoxyCodeLine{int64 num}
+
+\end{DoxyCode}
+ 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 interface show tutorial\_interfaces/msg/Sphere}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#return}
+\DoxyCodeLine{geometry\_msgs/Point center}
+\DoxyCodeLine{        float64 x}
+\DoxyCodeLine{        float64 y}
+\DoxyCodeLine{        float64 z}
+\DoxyCodeLine{float64 radius}
+
+\end{DoxyCode}
+ 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 interface show tutorial\_interfaces/srv/AddThreeInts}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#return}
+\DoxyCodeLine{int64 a}
+\DoxyCodeLine{int64 b}
+\DoxyCodeLine{int64 c}
+\DoxyCodeLine{-\/-\/-\/}
+\DoxyCodeLine{int64 sum}
+
+\end{DoxyCode}
+ Now we can test whether we could use these interfaces or not. Use the publisher and subscriber code and modify it. Then add a few lines to {\ttfamily CMake\+Lists.\+txt} and {\ttfamily package.\+xml} files to meet the source code. Afterall, build it, then source it. Then in two terminals run the talker and listener separately.
+
+By the way, the tutorial modified the code used in previous ones, but I want to keep the previous version intact so I created the source code inside the {\ttfamily tutorial\+\_\+interfaces} package. However, an error occurred while delivering {\ttfamily colcon build}\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{The package "{}tutorial\_interfaces"{} must not "{}build\_depend"{} on a package with the same name as this package}
+\DoxyCodeLine{The package "{}tutorial\_interfaces"{} must not "{}build\_export\_depend"{} on a package with the same name as this package  }
+\DoxyCodeLine{The package "{}tutorial\_interfaces"{} must not "{}exec\_depend"{} on a package with the same name as this package}
+
+\end{DoxyCode}
+ So that I created another package {\ttfamily cpp\+\_\+pubsub\+\_\+interfaces} to keep each version clean and healthy. By the way, recall that nested packages are not allowed in ROS2. In this case, self-\/dependencies is also nested by its child is itself. Also, the changes are about the message type ({\ttfamily tutorial\+\_\+interfaces\+::msg\+::\+Num} and {\ttfamily std\+\_\+msgs\+::msg\+::\+String}). (ps. tutorial\+\_\+interfaces should be built before cpp\+\_\+pubsub\+\_\+tutorial)
+
+ALso, be careful that the project name in the {\ttfamily CMake\+Lists.\+txt} should also be changed to {\ttfamily cpp\+\_\+pubsub\+\_\+interfaces} as well. Otherwise, {\ttfamily \$\+PROJECT\+\_\+\+NAME} won\textquotesingle{}t match.
+
+Finally, source the setup files, then run {\ttfamily ros2 run cpp\+\_\+pubsub\+\_\+interfaces talker} and {\ttfamily ros2 run cpp\+\_\+pubsub\+\_\+interfaces listener} in two different terminals.
+
+Do the same to the {\ttfamily Add\+Three\+Ints.\+srv} with client and server. Create a new package, and set up the configuration files, then build those files, then finally, source it then run it. By the way, the newly created package, {\ttfamily cpp\+\_\+srvcli\+\_\+interfaces} also uses the {\ttfamily tutorial\+\_\+interfaces} package. Here\textquotesingle{}s the result 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~/ws/src/ros2\_ws\$ ros2 run cpp\_srvcli\_interfaces server}
+\DoxyCodeLine{[INFO] [1693291703.803293812] [rclcpp]: Ready to add three ints.}
+\DoxyCodeLine{[INFO] [1693291714.448700490] [rclcpp]: Incoming request}
+\DoxyCodeLine{a: 2 b: 3 c: 1}
+\DoxyCodeLine{[INFO] [1693291714.448747191] [rclcpp]: sending back response: [6]}
+\DoxyCodeLine{\string^C[INFO] [1693291717.010731524] [rclcpp]: signal\_handler(signum=2)}
+
+\end{DoxyCode}
+ 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~/ws/src/ros2\_ws\$ ros2 run cpp\_srvcli\_interfaces client 2 3 1}
+\DoxyCodeLine{[INFO] [1693291714.449219891] [rclcpp]: Sum: 6}
+
+\end{DoxyCode}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md153}{}\doxysubsection{Implementing custom interfaces}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md153}
+\begin{quote}
+Note that it’s possible to set default values for fields within a message definition. \end{quote}
+A package named {\ttfamily more\+\_\+interfaces} is created. And these should go to {\ttfamily package.\+xml}. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{<buildtool\_depend>rosidl\_default\_generators</buildtool\_depend>}
+\DoxyCodeLine{<exec\_depend>rosidl\_default\_runtime</exec\_depend>}
+\DoxyCodeLine{<member\_of\_group>rosidl\_interface\_packages</member\_of\_group>}
+
+\end{DoxyCode}
+ $>$Note that at build time, we need {\ttfamily rosidl\+\_\+default\+\_\+generator}s, while at runtime, we only need {\ttfamily rosidl\+\_\+default\+\_\+runtime}.
+
+As for the {\ttfamily CMake\+Lists.\+txt} file, add\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{find\_package(rosidl\_default\_generators REQUIRED)}
+\DoxyCodeLine{}
+\DoxyCodeLine{\# it just lists the messages out inn msg\_files}
+\DoxyCodeLine{set(msg\_files}
+\DoxyCodeLine{  "{}msg/AddressBook.msg"{}}
+\DoxyCodeLine{)}
+\DoxyCodeLine{}
+\DoxyCodeLine{\# transform the idl into c++ cod}
+\DoxyCodeLine{rosidl\_generate\_interfaces(\$\{PROJECT\_NAME\}}
+\DoxyCodeLine{  \$\{msg\_files\}}
+\DoxyCodeLine{)}
+\DoxyCodeLine{}
+\DoxyCodeLine{\# export the message runtime dependency}
+\DoxyCodeLine{ament\_export\_dependencies(rosidl\_default\_runtime)}
+
+\end{DoxyCode}
+ (ps. we can use {\ttfamily set} like this to list out all our interfaces) 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{set(msg\_files}
+\DoxyCodeLine{  "{}msg/Message1.msg"{}}
+\DoxyCodeLine{  "{}msg/Message2.msg"{}}
+\DoxyCodeLine{  \# etc}
+\DoxyCodeLine{  )}
+\DoxyCodeLine{}
+\DoxyCodeLine{set(srv\_files}
+\DoxyCodeLine{  "{}srv/Service1.srv"{}}
+\DoxyCodeLine{  "{}srv/Service2.srv"{}}
+\DoxyCodeLine{   \# etc}
+\DoxyCodeLine{  )}
+\DoxyCodeLine{\# generate all at once}
+\DoxyCodeLine{rosidl\_generate\_interfaces(\$\{PROJECT\_NAME\}}
+\DoxyCodeLine{  \$\{msg\_files\}}
+\DoxyCodeLine{  \$\{srv\_files\}}
+\DoxyCodeLine{)}
+
+\end{DoxyCode}
+
+
+There\textquotesingle{}s one thing worth noting is that, it uses a lambda expression in the constructor. I don\textquotesingle{}t understand what it is until I searched on Google. \href{https://learn.microsoft.com/en-us/cpp/cpp/lambda-expressions-in-cpp?view=msvc-170}{\texttt{ Link}}. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{auto publish\_msg = [this]() -\/> void \{}
+\DoxyCodeLine{        auto message = more\_interfaces::msg::AddressBook();}
+\DoxyCodeLine{}
+\DoxyCodeLine{        message.first\_name = "{}John"{};}
+\DoxyCodeLine{        message.last\_name = "{}Doe"{};}
+\DoxyCodeLine{        message.phone\_number = "{}1234567890"{};}
+\DoxyCodeLine{        message.phone\_type = message.PHONE\_TYPE\_MOBILE;}
+\DoxyCodeLine{}
+\DoxyCodeLine{        std::cout << "{}Publishing Contact\(\backslash\)nFirst:"{} << message.first\_name <<}
+\DoxyCodeLine{          "{}  Last:"{} << message.last\_name << std::endl;}
+\DoxyCodeLine{}
+\DoxyCodeLine{        this-\/>address\_book\_publisher\_-\/>publish(message);}
+\DoxyCodeLine{      \};}
+
+\end{DoxyCode}
+
+\begin{DoxyItemize}
+\item {\ttfamily \mbox{[}this\mbox{]}}\+: the captured variable, which is the one in the same locality of this lambda expression which would be used later
+\item {\ttfamily ()}\+: it takes no parameters
+\item {\ttfamily -\/$>$ void}\+: it has no return type, it returns nothing
+\item {\ttfamily \{\};}\+: the body of the lambda expression
+\end{DoxyItemize}
+
+Then create a new target for this node\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{find\_package(rclcpp REQUIRED)}
+\DoxyCodeLine{}
+\DoxyCodeLine{\# the target is publish\_address\_book, and it depends on another target called rclcpp}
+\DoxyCodeLine{add\_executable(publish\_address\_book src/publish\_address\_book.cpp)}
+\DoxyCodeLine{ament\_target\_dependencies(publish\_address\_book rclcpp)}
+\DoxyCodeLine{}
+\DoxyCodeLine{install(TARGETS}
+\DoxyCodeLine{    publish\_address\_book}
+\DoxyCodeLine{  DESTINATION lib/\$\{PROJECT\_NAME\})}
+
+\end{DoxyCode}
+
+
+I\textquotesingle{}ve tried to use interfaces in the same package and failed. This following CMake code can fix that. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{rosidl\_get\_typesupport\_target(cpp\_typesupport\_target}
+\DoxyCodeLine{  \$\{PROJECT\_NAME\} rosidl\_typesupport\_cpp)}
+\DoxyCodeLine{}
+\DoxyCodeLine{target\_link\_libraries(publish\_address\_book "{}\$\{cpp\_typesupport\_target\}"{})}
+
+\end{DoxyCode}
+ $>$This finds the relevant generated C++ code from Address\+Book.\+msg and allows your target to link against it.\+You may have noticed that this step was not necessary when the interfaces being used were from a different package that was built independently. This CMake code is only required when you want to use interfaces in the same package as the one in which they are defined.
+
+Then, as always, build it, source it, and run it. The result\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~/ws/src/ros2\_ws\$ ros2 run more\_interfaces publish\_address\_book}
+\DoxyCodeLine{Publishing Contact}
+\DoxyCodeLine{First:John  Last:Doe}
+
+\end{DoxyCode}
+ 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~/ws/src/ros2\_ws\$ ros2 topic echo /address\_book}
+\DoxyCodeLine{first\_name: John}
+\DoxyCodeLine{last\_name: Doe}
+\DoxyCodeLine{phone\_number: '1234567890'}
+\DoxyCodeLine{phone\_type: 2}
+\DoxyCodeLine{-\/-\/-\/}
+
+\end{DoxyCode}
+
+
+$>$In this tutorial, you tried out different field types for defining interfaces, then built an interface in the same package where it’s being used. You also learned how to use another interface as a field type, as well as the package.\+xml, CMake\+Lists.\+txt, and \#include statements necessary for utilizing that feature.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md154}{}\doxysubsection{Using parameters in a class (\+C++)}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md154}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 pkg create -\/-\/build-\/type ament\_cmake cpp\_parameters -\/-\/dependencies rclcpp}
+
+\end{DoxyCode}
+ $>$Because you used the --dependencies option during package creation, you don’t have to manually add dependencies to package.\+xml or CMake\+Lists.\+txt.
+
+Then examine the code\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{class MinimalParam : public rclcpp::Node}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{public:}
+\DoxyCodeLine{  MinimalParam()}
+\DoxyCodeLine{  : Node("{}minimal\_param\_node"{})}
+\DoxyCodeLine{  \{}
+\DoxyCodeLine{    auto param\_desc = rcl\_interfaces::msg::ParameterDescriptor\{\};}
+\DoxyCodeLine{    param\_desc.description = "{}This parameter is mine!"{};}
+\DoxyCodeLine{    // Descriptors allow you to specify a text description of the parameter and its constraints, like making it read-\/only, specifying a range, etc.}
+\DoxyCodeLine{}
+\DoxyCodeLine{    this-\/>declare\_parameter("{}my\_parameter"{}, "{}world"{}, param\_desc); // this declare the parameter named my\_parameter valued string type "{}world"{}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    timer\_ = this-\/>create\_wall\_timer(}
+\DoxyCodeLine{      1000ms, std::bind(\&MinimalParam::timer\_callback, this)); }
+\DoxyCodeLine{      // this causes the timer\_callback function to be executed every 1000ms}
+\DoxyCodeLine{  \}}
+\DoxyCodeLine{  void timer\_callback()}
+\DoxyCodeLine{  \{}
+\DoxyCodeLine{    std::string my\_param = this-\/>get\_parameter("{}my\_parameter"{}).as\_string(); // gets the parameter and stores it in my\_param}
+\DoxyCodeLine{}
+\DoxyCodeLine{    RCLCPP\_INFO(this-\/>get\_logger(), "{}Hello \%s!"{}, my\_param.c\_str());}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::vector<rclcpp::Parameter> all\_new\_parameters\{rclcpp::Parameter("{}my\_parameter"{}, "{}world"{})\};}
+\DoxyCodeLine{    this-\/>set\_parameters(all\_new\_parameters); // this set the parameter my\_parameter back to the default value world}
+\DoxyCodeLine{    // this ensures it is always reset back to the original}
+\DoxyCodeLine{  \}}
+
+\end{DoxyCode}
+
+
+Then add this to the {\ttfamily CMake\+Lists.\+txt} file 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{find\_package(rclcpp REQUIRED)}
+\DoxyCodeLine{}
+\DoxyCodeLine{add\_executable(minimal\_param\_node src/cpp\_parameters\_node.cpp)}
+\DoxyCodeLine{ament\_target\_dependencies(minimal\_param\_node rclcpp)}
+\DoxyCodeLine{}
+\DoxyCodeLine{install(TARGETS}
+\DoxyCodeLine{    minimal\_param\_node}
+\DoxyCodeLine{  DESTINATION lib/\$\{PROJECT\_NAME\}}
+\DoxyCodeLine{)}
+
+\end{DoxyCode}
+
+
+Then, check dependencies, build it, source it, and run it. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{rosdep install -\/i -\/-\/from-\/path src -\/-\/rosdistro humble -\/y}
+\DoxyCodeLine{colcon build -\/-\/packages-\/select cpp\_parameters}
+\DoxyCodeLine{source install/setup.bash}
+\DoxyCodeLine{ros2 run cpp\_parameters minimal\_param\_node}
+
+\end{DoxyCode}
+ After running the node, the terminal shows the default value of the parameter. We can see the parameters 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~\$ ros2 param list}
+\DoxyCodeLine{/minimal\_param\_node:}
+\DoxyCodeLine{  my\_parameter}
+\DoxyCodeLine{  qos\_overrides./parameter\_events.publisher.depth}
+\DoxyCodeLine{  qos\_overrides./parameter\_events.publisher.durability}
+\DoxyCodeLine{  qos\_overrides./parameter\_events.publisher.history}
+\DoxyCodeLine{  qos\_overrides./parameter\_events.publisher.reliability}
+\DoxyCodeLine{  use\_sim\_time}
+
+\end{DoxyCode}
+ To change it, use param set, enter this in another terminal\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 param set /minimal\_param\_node my\_parameter earth}
+
+\end{DoxyCode}
+ The log info shown in the terminal\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{[INFO] [1693707247.202344702] [minimal\_param\_node]: Hello world!}
+\DoxyCodeLine{[INFO] [1693707248.202338617] [minimal\_param\_node]: Hello earth!}
+\DoxyCodeLine{[INFO] [1693707249.202349402] [minimal\_param\_node]: Hello world!}
+
+\end{DoxyCode}
+ However, the parameter would be set back to the default value every callback, so the set value \char`\"{}earth\char`\"{} only shown in one duration.
+
+We can change the parameters via a launch file as well. In the package, create {\ttfamily launch/cpp\+\_\+parameters\+\_\+launch.\+py} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{from launch import LaunchDescription}
+\DoxyCodeLine{from launch\_ros.actions import Node}
+\DoxyCodeLine{}
+\DoxyCodeLine{def generate\_launch\_description():}
+\DoxyCodeLine{    return LaunchDescription([}
+\DoxyCodeLine{        Node(}
+\DoxyCodeLine{            package="{}cpp\_parameters"{},}
+\DoxyCodeLine{            executable="{}minimal\_param\_node"{},}
+\DoxyCodeLine{            name="{}custom\_minimal\_param\_node"{},}
+\DoxyCodeLine{}
+\DoxyCodeLine{            \# we ensure our output is printed in our console.}
+\DoxyCodeLine{            output="{}screen"{},}
+\DoxyCodeLine{            emulate\_tty=True,}
+\DoxyCodeLine{}
+\DoxyCodeLine{            }
+\DoxyCodeLine{            parameters=[}
+\DoxyCodeLine{                \{"{}my\_parameter"{}: "{}earth"{}\}}
+\DoxyCodeLine{            ]}
+\DoxyCodeLine{        )}
+\DoxyCodeLine{    ])}
+
+\end{DoxyCode}
+ Then, add the launch file to {\ttfamily CMake\+Lists.\+txt} file 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{install(}
+\DoxyCodeLine{  DIRECTORY launch}
+\DoxyCodeLine{  DESTINATION share/\$\{PROJECT\_NAME\}}
+\DoxyCodeLine{)}
+
+\end{DoxyCode}
+
+
+Then, check it, build it, source it, then run it. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~/ws/src/ros2\_ws\$ ros2 launch cpp\_parameters cpp\_parameters\_launch.py}
+\DoxyCodeLine{[INFO] [launch]: All log files can be found below /home/docker/.ros/log/2023-\/09-\/03-\/10-\/31-\/08-\/711418-\/ros2-\/568}
+\DoxyCodeLine{[INFO] [launch]: Default logging verbosity is set to INFO}
+\DoxyCodeLine{[INFO] [minimal\_param\_node-\/1]: process started with pid [569]}
+\DoxyCodeLine{[minimal\_param\_node-\/1] [INFO] [1693708270.685820721] [custom\_minimal\_param\_node]: Hello earth!}
+\DoxyCodeLine{[minimal\_param\_node-\/1] [INFO] [1693708271.685769066] [custom\_minimal\_param\_node]: Hello world!}
+
+\end{DoxyCode}
+
+
+$>$You created a node with a custom parameter that can be set either from a launch file or the command line. You added the dependencies, executables, and a launch file to the package configuration files so that you could build and run them, and see the parameter in action.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md155}{}\doxysubsection{Using $<$tt$>$ros2doctor$<$/tt$>$ to identify issues}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md155}
+\begin{quote}
+When your ROS 2 setup is not running as expected, you can check its settings with the {\ttfamily ros2doctor} tool. {\ttfamily ros2doctor} checks all aspects of ROS 2, including platform, version, network, environment, running systems and more, and warns you about possible errors and reasons for issues. \end{quote}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 doctor}
+
+\end{DoxyCode}
+
+
+Run turtle sim and teleop key, and run ros2doctor, it\textquotesingle{}ll show that\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{UserWarning: Publisher without subscriber detected on /turtle1/color\_sensor.}
+\DoxyCodeLine{UserWarning: Publisher without subscriber detected on /turtle1/pose.}
+
+\end{DoxyCode}
+ \begin{quote}
+It seems that the /turtlesim node publishes data to two topics that aren’t being subscribed to, and ros2doctor thinks this could possibly lead to issues. If you run commands to echo the /color\+\_\+sensor and /pose topics, those warnings will disappear because the publishers will have subscribers. \end{quote}
+To get a full report\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 doctor -\/-\/report}
+
+\end{DoxyCode}
+
+
+{\bfseries{Crosscheck the information}} from {\ttfamily ros2 doctor} and {\ttfamily ros2 doctor -\/-\/report} to identify the issue. $>$For example, if ros2doctor returned the warning (mentioned earlier) that your distribution is “not fully supported or tested”, you might take a look at the ROS 2 INFORMATION section of the report\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{distribution name      : <distro>}
+\DoxyCodeLine{distribution type      : ros2}
+\DoxyCodeLine{distribution status    : prerelease \# it's not fully supported}
+\DoxyCodeLine{release platforms      : \{'<platform>': ['<version>']\}}
+
+\end{DoxyCode}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md156}{}\doxysubsection{Creating and using Plugins (\+C++)}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md156}
+$>${\ttfamily pluginlib} is a C++ library for {\bfseries{loading and unloading plugins from within a ROS package.}} Plugins are dynamically loadable classes that are loaded from a runtime library (i.\+e. shared object, dynamically linked library). With pluginlib, one does not have to explicitly link their application against the library containing the classes – instead pluginlib can open a library containing exported classes at any point without the application having any prior awareness of the library or the header file containing the class definition. Plugins are useful for extending/modifying application behavior without needing the application source code.
+
+Install the plugin library first\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{sudo apt-\/get install ros-\/humble-\/pluginlib}
+
+\end{DoxyCode}
+
+
+$>$In this tutorial, you will create two new packages, one that defines the base class, and another that provides the plugins. The base class will define a generic polygon class, and then our plugins will define specific shapes.
+
+First, create the package (it creates a node named area\+\_\+node(where a source file {\ttfamily area\+\_\+node.\+cpp} is created), we can tell it from the {\ttfamily CMake\+Lists.\+txt} file)\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 pkg create -\/-\/build-\/type ament\_cmake polygon\_base -\/-\/dependencies pluginlib -\/-\/node-\/name area\_node}
+
+\end{DoxyCode}
+ Inside the include directory of the package, the /polygon\+\_\+base/regular\+\_\+polygon.hpp defines\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#ifndef POLYGON\_BASE\_REGULAR\_POLYGON\_HPP}
+\DoxyCodeLine{\#define POLYGON\_BASE\_REGULAR\_POLYGON\_HPP}
+\DoxyCodeLine{}
+\DoxyCodeLine{namespace polygon\_base}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{  class RegularPolygon}
+\DoxyCodeLine{  \{}
+\DoxyCodeLine{    public:}
+\DoxyCodeLine{      virtual void initialize(double side\_length) = 0;}
+\DoxyCodeLine{      virtual double area() = 0;}
+\DoxyCodeLine{      virtual \string~RegularPolygon()\{\}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    protected:}
+\DoxyCodeLine{      RegularPolygon()\{\} // this is needed with pluginlib}
+\DoxyCodeLine{  \};}
+\DoxyCodeLine{\}  // namespace polygon\_base}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#endif  // POLYGON\_BASE\_REGULAR\_POLYGON\_HPP}
+
+\end{DoxyCode}
+ \href{https://shengyu7697.github.io/cpp-virtual/}{\texttt{ This is the link about the syntax, virtual}} $>${\bfseries{With pluginlib, a constructor without parameters is required, so if any parameters to the class are needed, we use the initialize method to pass them to the object.}}
+
+To make this header available to other classes, add to the {\ttfamily CMake\+Lists.\+txt} file\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{install(}
+\DoxyCodeLine{  DIRECTORY include/}
+\DoxyCodeLine{  DESTINATION include}
+\DoxyCodeLine{)}
+
+\end{DoxyCode}
+ and add this before the {\ttfamily ament\+\_\+package} command\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ament\_export\_include\_directories(}
+\DoxyCodeLine{  include}
+\DoxyCodeLine{)}
+
+\end{DoxyCode}
+
+
+Then, create the second package, which is the plugin package. (it creates a package named {\ttfamily polygon\+\_\+plugins}, with dependencies {\ttfamily polygon\+\_\+base}(the one we just created) and {\ttfamily pluginlib}) (it also creates a directory as the library named {\ttfamily polygon\+\_\+plugins}, under the {\ttfamily include} directory)(it also creates a source file {\ttfamily polygon\+\_\+plugins.\+cpp} under {\ttfamily src}) 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 pkg create -\/-\/build-\/type ament\_cmake polygon\_plugins -\/-\/dependencies polygon\_base pluginlib -\/-\/library-\/name polygon\_plugins}
+
+\end{DoxyCode}
+
+
+In previous examples, we\textquotesingle{}ve use the code from another package, but in the form of static linking libraries. For now, with plugins, we can treate the other package as a dynamic linked library. We can tell that from the include syntax. One uses {\ttfamily \char`\"{}\char`\"{}}, and now we use {\ttfamily $<$$>$}.
+
+Inside the source file {\ttfamily polygon\+\_\+plugins.\+cpp}, it implements the abstract classes defined in package {\ttfamily polygon\+\_\+base}. But here\textquotesingle{}s the special thing. The last three lines of the code\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#include <pluginlib/class\_list\_macros.hpp>}
+\DoxyCodeLine{}
+\DoxyCodeLine{PLUGINLIB\_EXPORT\_CLASS(polygon\_plugins::Square, polygon\_base::RegularPolygon)}
+\DoxyCodeLine{PLUGINLIB\_EXPORT\_CLASS(polygon\_plugins::Triangle, polygon\_base::RegularPolygon)}
+
+\end{DoxyCode}
+ (quoted from the tutorial) The only piece that is pluginlib-\/specific is the last three lines, which invokes some magical macros that {\bfseries{register the classes as actual plugins}}. Let’s go through the arguments to the PLUGINLIB\+\_\+\+EXPORT\+\_\+\+CLASS macro\+:
+\begin{DoxyEnumerate}
+\item The fully-\/qualified {\bfseries{type of the plugin class}}, in this case, polygon\+\_\+plugins\+::\+Square.
+\item The fully-\/qualified {\bfseries{type of the base class}}, in this case, polygon\+\_\+base\+::\+Regular\+Polygon
+\end{DoxyEnumerate}
+
+We\textquotesingle{}ve already make it so that the plugins can be created once the library is loaded, but the plugin loader still needs a way to find that library and to know what to reference within the library. Thus, we add another xml file, along with the two export lines above, makes everything available to the ROS toolchain. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{<library path="{}polygon\_plugins"{}>}
+\DoxyCodeLine{  <class type="{}polygon\_plugins::Square"{} base\_class\_type="{}polygon\_base::RegularPolygon"{}>}
+\DoxyCodeLine{    <description>This is a square plugin.</description>}
+\DoxyCodeLine{  </class>}
+\DoxyCodeLine{  <class type="{}polygon\_plugins::Triangle"{} base\_class\_type="{}polygon\_base::RegularPolygon"{}>}
+\DoxyCodeLine{    <description>This is a triangle plugin.</description>}
+\DoxyCodeLine{  </class>}
+\DoxyCodeLine{</library>}
+\DoxyCodeLine{\# this specifies the library the plugin loader wants to find.}
+\DoxyCodeLine{\# the references within this library are specified as base\_class\_type}
+
+\end{DoxyCode}
+ (quoted from the tutorial)
+\begin{DoxyEnumerate}
+\item The library tag gives the relative path to a library that contains the plugins that we want to export. In ROS 2, that is just the name of the library, which is {\ttfamily polygon\+\_\+plugins}
+\item {\bfseries{The class tag declares a plugin that we want to export from our library.}} Let’s go through its parameters\+:
+\begin{DoxyItemize}
+\item {\ttfamily type}\+: The fully qualified type of the plugin. For us, that’s polygon\+\_\+plugins\+::\+Square.
+\item {\ttfamily base\+\_\+class}\+: The fully qualified base class type for the plugin. For us, that’s polygon\+\_\+base\+::\+Regular\+Polygon.
+\item {\ttfamily description}\+: A description of the plugin and what it does.
+\end{DoxyItemize}
+\end{DoxyEnumerate}
+
+After specifying the xml file, the last step is to export the plugins via {\ttfamily CMake\+Lists.\+txt}. This is a change from ROS 1, where the exporting was done via package.\+xml. Add the following line to your ros2\+\_\+ws/src/polygon\+\_\+plugins/\+CMake\+Lists.\+txt after the line reading find\+\_\+package(pluginlib REQUIRED)\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{pluginlib\_export\_plugin\_description\_file(polygon\_base plugins.xml)}
+
+\end{DoxyCode}
+
+\begin{DoxyEnumerate}
+\item (the package with the base class {\ttfamily polygon\+\_\+base})
+\item (export the plugin as the {\ttfamily plugins.\+xml} specified)
+\end{DoxyEnumerate}
+
+Now, we can use this package as plugins in any other packages. For this tutorial, we use the plugins in the base package {\ttfamily polygon\+\_\+base}. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#include <pluginlib/class\_loader.hpp>}
+\DoxyCodeLine{\#include <polygon\_base/regular\_polygon.hpp>}
+\DoxyCodeLine{}
+\DoxyCodeLine{int main(int argc, char** argv)}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{  // To avoid unused parameter warnings}
+\DoxyCodeLine{  (void) argc;}
+\DoxyCodeLine{  (void) argv;}
+\DoxyCodeLine{}
+\DoxyCodeLine{  pluginlib::ClassLoader<polygon\_base::RegularPolygon> poly\_loader("{}polygon\_base"{}, "{}polygon\_base::RegularPolygon"{});}
+\DoxyCodeLine{}
+\DoxyCodeLine{  try}
+\DoxyCodeLine{  \{}
+\DoxyCodeLine{    std::shared\_ptr<polygon\_base::RegularPolygon> triangle = poly\_loader.createSharedInstance("{}polygon\_plugins::Triangle"{});}
+\DoxyCodeLine{    triangle-\/>initialize(10.0);}
+\DoxyCodeLine{}
+\DoxyCodeLine{    std::shared\_ptr<polygon\_base::RegularPolygon> square = poly\_loader.createSharedInstance("{}polygon\_plugins::Square"{});}
+\DoxyCodeLine{    square-\/>initialize(10.0);}
+\DoxyCodeLine{}
+\DoxyCodeLine{    printf("{}Triangle area: \%.2f\(\backslash\)n"{}, triangle-\/>area());}
+\DoxyCodeLine{    printf("{}Square area: \%.2f\(\backslash\)n"{}, square-\/>area());}
+\DoxyCodeLine{  \}}
+\DoxyCodeLine{  catch(pluginlib::PluginlibException\& ex)}
+\DoxyCodeLine{  \{}
+\DoxyCodeLine{    printf("{}The plugin failed to load for some reason. Error: \%s\(\backslash\)n"{}, ex.what());}
+\DoxyCodeLine{  \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{  return 0;}
+\DoxyCodeLine{\}}
+
+\end{DoxyCode}
+ $>$There are a number of ways to instantiate an instance of the class. In this example, we’re using shared pointers. We just need to call {\ttfamily create\+Shared\+Instance} with the fully-\/qualified type of the plugin class, in this case, {\ttfamily polygon\+\_\+plugins\+::\+Square}.
+
+$>$Important note\+: the {\ttfamily polygon\+\_\+base} package in which this node is defined does NOT depend on the {\ttfamily polygon\+\_\+plugins} class. {\bfseries{The plugins will be loaded dynamically without any dependency needing to be declared}}. Furthermore, we’re instantiating the classes with hardcoded plugin names, but you can also do so dynamically with parameters, etc.
+
+Then, build it, source it, then run it\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{colcon build -\/-\/packages-\/select polygon\_base polygon\_plugins}
+\DoxyCodeLine{source install/setup.bash}
+\DoxyCodeLine{ros2 run polygon\_base area\_node}
+
+\end{DoxyCode}
+ 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Triangle area: 43.30}
+\DoxyCodeLine{Square area: 100.00}
+
+\end{DoxyCode}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md157}{}\doxysection{Intermediate}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md157}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md158}{}\doxysubsection{Managing Dependecies with $<$tt$>$rosdep$<$/tt$>$}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md158}
+$>$rosdep is a dependency management utility that can work with packages and external libraries. It is a command-\/line utility for identifying and installing dependencies to build or install a package. rosdep is not a package manager in its own right; it is a meta-\/package manager that uses its own knowledge of the system and the dependencies to find the appropriate package to install on a particular platform. The actual installation is done using the system package manager (e.\+g. apt on Debian/\+Ubuntu, dnf on Fedora/\+RHEL, etc). It is most often invoked before building a workspace, where it is used to install the dependencies of the packages within that workspace. It has the ability to work over a single package or over a directory of packages (e.\+g. workspace).
+
+The package.\+xml is the file in your software where rosdep finds the set of dependencies. It is important that the list of dependencies in the package.\+xml is complete and correct, which allows all of the tooling to determine the packages dependencies. The dependencies in the package.\+xml file are generally referred to as “rosdep keys”.
+\begin{DoxyItemize}
+\item $\ast$$\ast${\ttfamily $<$depend$>$}$\ast$$\ast$\+: These are dependencies that should be provided at both build time and run time for your package. For C++ packages, if in doubt, use this tag. Pure Python packages generally don’t have a build phase, so should never use this and should use $<$exec\+\_\+depend$>$ instead.
+\item $\ast$$\ast${\ttfamily $<$build\+\_\+depend$>$}$\ast$$\ast$\+: If you only use a particular dependency for building your package, and not at execution time, you can use the $<$build\+\_\+depend$>$ tag. With this type of dependency, an installed binary of your package does not require that particular package to be installed.
+\item $\ast$$\ast${\ttfamily $<$build\+\_\+export\+\_\+depend$>$}$\ast$$\ast$\+: This tag is used when your package exports headers or other resources that depend on a specific package. It ensures that packages depending on your package for building have access to these resources.
+\item $\ast$$\ast${\ttfamily $<$exec\+\_\+depend$>$}$\ast$$\ast$\+: This tag declares dependencies for shared libraries, executables, Python modules, launch scripts and other files required when running your package.
+\item $\ast$$\ast${\ttfamily $<$test\+\_\+depend$>$}$\ast$$\ast$\+:his tag declares dependencies needed only by tests. Dependencies here should not be duplicated with keys specified by $<$build\+\_\+depend$>$, $<$exec\+\_\+depend$>$, or $<$depend$>$
+\end{DoxyItemize}
+
+$>$rosdep will check for package.\+xml files in its path or for a specific package and find the rosdep keys stored within. These keys are then cross-\/referenced against a central index to find the appropriate ROS package or software library in various package managers. Finally, once the packages are found, they are installed and ready to go! rosdep works by retrieving the central index on to your local machine so that it doesn’t have to access the network every time it runs (on Debian/\+Ubuntu the configuration for it is stored in /etc/ros/rosdep/sources.list.\+d/20-\/default.list). The central index is known as rosdistro, which may be found online. We’ll explore that more in the next section.
+
+Install all the dependencies over a workspace with root src. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{rosdep install -\/-\/from-\/paths src -\/y -\/-\/ignore-\/src}
+
+\end{DoxyCode}
+
+\begin{DoxyItemize}
+\item --from-\/paths src specifies the path to check for package.\+xml files to resolve keys for
+\item -\/y means to default yes to all prompts from the package manager to install without prompts
+\item --ignore-\/src means to ignore installing dependencies, even if a rosdep key exists, if the package itself is also in the workspace.
+\end{DoxyItemize}
+
+There are additional arguments and options available. Use rosdep -\/h to see them.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md159}{}\doxysubsection{Creating an action}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md159}
+Actions are defined in .action files of the form\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\# Request}
+\DoxyCodeLine{-\/-\/-\/}
+\DoxyCodeLine{\# Result}
+\DoxyCodeLine{-\/-\/-\/}
+\DoxyCodeLine{\# Feedback}
+
+\end{DoxyCode}
+
+\begin{DoxyItemize}
+\item request\+: initiating a new goal
+\item result\+: goal is done
+\item feedback\+: periodical updates about the goal
+\item goal\+: the instance of an action
+\end{DoxyItemize}
+
+Create {\ttfamily /action/\+Fibonacci.action} inside the package\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{int32 order}
+\DoxyCodeLine{-\/-\/-\/}
+\DoxyCodeLine{int32[] sequence}
+\DoxyCodeLine{-\/-\/-\/}
+\DoxyCodeLine{int32[] partial\_sequence}
+
+\end{DoxyCode}
+ Before we can use the action interface, remember we should transfer it into C-\/code. Thus, we should use the interface generator included in {\ttfamily CMake\+Lists.\+txt}. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{find\_package(rosidl\_default\_generators REQUIRED)}
+\DoxyCodeLine{}
+\DoxyCodeLine{rosidl\_generate\_interfaces(\$\{PROJECT\_NAME\}}
+\DoxyCodeLine{  "{}action/Fibonacci.action"{}}
+\DoxyCodeLine{)}
+
+\end{DoxyCode}
+ Also, we should change the {\ttfamily package.\+xml} for that build tool and cpp header source. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{<buildtool\_depend>rosidl\_default\_generators</buildtool\_depend>}
+\DoxyCodeLine{<depend>action\_msgs</depend>}
+\DoxyCodeLine{<member\_of\_group>rosidl\_interface\_packages</member\_of\_group>}
+
+\end{DoxyCode}
+
+
+Then, build it, source it, then run it 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{colcon build}
+\DoxyCodeLine{source install/setup.bash}
+\DoxyCodeLine{ros2 interface show action\_tutorials\_interfaces/action/Fibonacci}
+
+\end{DoxyCode}
+ And here\textquotesingle{}s the result\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~/ws/src/ros2\_ws\$ ros2 interface show action\_tutorials\_interfaces/action/Fibonacci}
+\DoxyCodeLine{int32 order}
+\DoxyCodeLine{-\/-\/-\/}
+\DoxyCodeLine{int32[] sequence}
+\DoxyCodeLine{-\/-\/-\/}
+\DoxyCodeLine{int32[] partial\_sequence}
+
+\end{DoxyCode}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md160}{}\doxysubsection{Writing an action server and client (\+C++)}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md160}
+First, create a package 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\# in /ro2\_ws/src}
+\DoxyCodeLine{ros2 pkg create -\/-\/dependencies action\_tutorials\_interfaces rclcpp rclcpp\_action rclcpp\_components -\/-\/ action\_tutorials\_cpp}
+
+\end{DoxyCode}
+ \begin{quote}
+In order to make the package compile and work on Windows, we need to add in some “visibility control”. \end{quote}
+Create {\ttfamily action\+\_\+tutorials\+\_\+cpp/include/action\+\_\+tutorials\+\_\+cpp/visibility\+\_\+control.\+h} and put\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#ifndef ACTION\_TUTORIALS\_CPP\_\_VISIBILITY\_CONTROL\_H\_}
+\DoxyCodeLine{\#define ACTION\_TUTORIALS\_CPP\_\_VISIBILITY\_CONTROL\_H\_}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#ifdef \_\_cplusplus}
+\DoxyCodeLine{extern "{}C"{}}
+\DoxyCodeLine{\{}
+\DoxyCodeLine{\#endif}
+\DoxyCodeLine{}
+\DoxyCodeLine{// This logic was borrowed (then namespaced) from the examples on the gcc wiki:}
+\DoxyCodeLine{//     https://gcc.gnu.org/wiki/Visibility}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#if defined \_WIN32 || defined \_\_CYGWIN\_\_}
+\DoxyCodeLine{  \#ifdef \_\_GNUC\_\_}
+\DoxyCodeLine{    \#define ACTION\_TUTORIALS\_CPP\_EXPORT \_\_attribute\_\_ ((dllexport))}
+\DoxyCodeLine{    \#define ACTION\_TUTORIALS\_CPP\_IMPORT \_\_attribute\_\_ ((dllimport))}
+\DoxyCodeLine{  \#else}
+\DoxyCodeLine{    \#define ACTION\_TUTORIALS\_CPP\_EXPORT \_\_declspec(dllexport)}
+\DoxyCodeLine{    \#define ACTION\_TUTORIALS\_CPP\_IMPORT \_\_declspec(dllimport)}
+\DoxyCodeLine{  \#endif}
+\DoxyCodeLine{  \#ifdef ACTION\_TUTORIALS\_CPP\_BUILDING\_DLL}
+\DoxyCodeLine{    \#define ACTION\_TUTORIALS\_CPP\_PUBLIC ACTION\_TUTORIALS\_CPP\_EXPORT}
+\DoxyCodeLine{  \#else}
+\DoxyCodeLine{    \#define ACTION\_TUTORIALS\_CPP\_PUBLIC ACTION\_TUTORIALS\_CPP\_IMPORT}
+\DoxyCodeLine{  \#endif}
+\DoxyCodeLine{  \#define ACTION\_TUTORIALS\_CPP\_PUBLIC\_TYPE ACTION\_TUTORIALS\_CPP\_PUBLIC}
+\DoxyCodeLine{  \#define ACTION\_TUTORIALS\_CPP\_LOCAL}
+\DoxyCodeLine{\#else}
+\DoxyCodeLine{  \#define ACTION\_TUTORIALS\_CPP\_EXPORT \_\_attribute\_\_ ((visibility("{}default"{})))}
+\DoxyCodeLine{  \#define ACTION\_TUTORIALS\_CPP\_IMPORT}
+\DoxyCodeLine{  \#if \_\_GNUC\_\_ >= 4}
+\DoxyCodeLine{    \#define ACTION\_TUTORIALS\_CPP\_PUBLIC \_\_attribute\_\_ ((visibility("{}default"{})))}
+\DoxyCodeLine{    \#define ACTION\_TUTORIALS\_CPP\_LOCAL  \_\_attribute\_\_ ((visibility("{}hidden"{})))}
+\DoxyCodeLine{  \#else}
+\DoxyCodeLine{    \#define ACTION\_TUTORIALS\_CPP\_PUBLIC}
+\DoxyCodeLine{    \#define ACTION\_TUTORIALS\_CPP\_LOCAL}
+\DoxyCodeLine{  \#endif}
+\DoxyCodeLine{  \#define ACTION\_TUTORIALS\_CPP\_PUBLIC\_TYPE}
+\DoxyCodeLine{\#endif}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#ifdef \_\_cplusplus}
+\DoxyCodeLine{\}}
+\DoxyCodeLine{\#endif}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#endif  // ACTION\_TUTORIALS\_CPP\_\_VISIBILITY\_CONTROL\_H\_}
+
+\end{DoxyCode}
+ Honestly, I don\textquotesingle{}t understand what is going on here. But we can start writing an action server computing Fibonacci. Create {\ttfamily /src/fibonacci\+\_\+action\+\_\+server.cpp}. We should also add a few lines to {\ttfamily CMake\+Lists.\+txt} to maintain dependencies. \href{https://shengyu7697.github.io/cpp-explicit/}{\texttt{ About cpp syntax explicit}}
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\# ... find packages}
+\DoxyCodeLine{}
+\DoxyCodeLine{add\_library(action\_server SHARED}
+\DoxyCodeLine{  src/fibonacci\_action\_server.cpp)}
+\DoxyCodeLine{target\_include\_directories(action\_server PRIVATE}
+\DoxyCodeLine{  \$<BUILD\_INTERFACE:\$\{CMAKE\_CURRENT\_SOURCE\_DIR\}/include>}
+\DoxyCodeLine{  \$<INSTALL\_INTERFACE:include>)}
+\DoxyCodeLine{target\_compile\_definitions(action\_server}
+\DoxyCodeLine{  PRIVATE "{}ACTION\_TUTORIALS\_CPP\_BUILDING\_DLL"{})}
+\DoxyCodeLine{ament\_target\_dependencies(action\_server}
+\DoxyCodeLine{  "{}action\_tutorials\_interfaces"{}}
+\DoxyCodeLine{  "{}rclcpp"{}}
+\DoxyCodeLine{  "{}rclcpp\_action"{}}
+\DoxyCodeLine{  "{}rclcpp\_components"{})}
+\DoxyCodeLine{rclcpp\_components\_register\_node(action\_server PLUGIN "{}action\_tutorials\_cpp::FibonacciActionServer"{} EXECUTABLE fibonacci\_action\_server)}
+\DoxyCodeLine{install(TARGETS}
+\DoxyCodeLine{  action\_server}
+\DoxyCodeLine{  ARCHIVE DESTINATION lib}
+\DoxyCodeLine{  LIBRARY DESTINATION lib}
+\DoxyCodeLine{  RUNTIME DESTINATION bin)}
+
+\end{DoxyCode}
+ Then run {\ttfamily colcon build}. It should build {\ttfamily fibonacci\+\_\+action\+\_\+server.\+cpp} in {\ttfamily action\+\_\+tutorials\+\_\+cpp} pacakge.
+
+We also instantiate a ROS timer that will kick off the one and only call to send\+\_\+goal\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{this-\/>timer\_ = this-\/>create\_wall\_timer(}
+\DoxyCodeLine{  std::chrono::milliseconds(500),}
+\DoxyCodeLine{  std::bind(\&FibonacciActionClient::send\_goal, this));}
+
+\end{DoxyCode}
+ \href{https://www.jyt0532.com/2017/01/08/bind/}{\texttt{ About std\+::bind}}
+
+And similarly, build the client as well. {\ttfamily CMake\+Lists.\+txt}\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{add\_library(action\_client SHARED}
+\DoxyCodeLine{  src/fibonacci\_action\_client.cpp)}
+\DoxyCodeLine{target\_include\_directories(action\_client PRIVATE}
+\DoxyCodeLine{  \$<BUILD\_INTERFACE:\$\{CMAKE\_CURRENT\_SOURCE\_DIR\}/include>}
+\DoxyCodeLine{  \$<INSTALL\_INTERFACE:include>)}
+\DoxyCodeLine{target\_compile\_definitions(action\_client}
+\DoxyCodeLine{  PRIVATE "{}ACTION\_TUTORIALS\_CPP\_BUILDING\_DLL"{})}
+\DoxyCodeLine{ament\_target\_dependencies(action\_client}
+\DoxyCodeLine{  "{}action\_tutorials\_interfaces"{}}
+\DoxyCodeLine{  "{}rclcpp"{}}
+\DoxyCodeLine{  "{}rclcpp\_action"{}}
+\DoxyCodeLine{  "{}rclcpp\_components"{})}
+\DoxyCodeLine{rclcpp\_components\_register\_node(action\_client PLUGIN "{}action\_tutorials\_cpp::FibonacciActionClient"{} EXECUTABLE fibonacci\_action\_client)}
+\DoxyCodeLine{install(TARGETS}
+\DoxyCodeLine{  action\_client}
+\DoxyCodeLine{  ARCHIVE DESTINATION lib}
+\DoxyCodeLine{  LIBRARY DESTINATION lib}
+\DoxyCodeLine{  RUNTIME DESTINATION bin)}
+
+\end{DoxyCode}
+ 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{After that, source it then run it. Here's the result:}
+\DoxyCodeLine{-\/ client}
+
+\end{DoxyCode}
+ docker@ros2\+:$\sim$/ws/src/ros2\+\_\+ws\$ ros2 run action\+\_\+tutorials\+\_\+cpp fibonacci\+\_\+action\+\_\+client \mbox{[}INFO\mbox{]} \mbox{[}1693889845.\+150850325\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+client\mbox{]}\+: Sending goal \mbox{[}INFO\mbox{]} \mbox{[}1693889845.\+152368070\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+client\mbox{]}\+: Goal accepted by server, waiting for result \mbox{[}INFO\mbox{]} \mbox{[}1693889845.\+153103892\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+client\mbox{]}\+: Next number in sequence received\+: 0 1 1 \mbox{[}INFO\mbox{]} \mbox{[}1693889846.\+152979478\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+client\mbox{]}\+: Next number in sequence received\+: 0 1 1 2 \mbox{[}INFO\mbox{]} \mbox{[}1693889847.\+152965399\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+client\mbox{]}\+: Next number in sequence received\+: 0 1 1 2 3 \mbox{[}INFO\mbox{]} \mbox{[}1693889848.\+152860585\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+client\mbox{]}\+: Next number in sequence received\+: 0 1 1 2 3 5 \mbox{[}INFO\mbox{]} \mbox{[}1693889849.\+153781401\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+client\mbox{]}\+: Next number in sequence received\+: 0 1 1 2 3 5 8 \mbox{[}INFO\mbox{]} \mbox{[}1693889850.\+153472725\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+client\mbox{]}\+: Next number in sequence received\+: 0 1 1 2 3 5 8 13 \mbox{[}INFO\mbox{]} \mbox{[}1693889851.\+152991279\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+client\mbox{]}\+: Next number in sequence received\+: 0 1 1 2 3 5 8 13 21 \mbox{[}INFO\mbox{]} \mbox{[}1693889852.\+153055651\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+client\mbox{]}\+: Next number in sequence received\+: 0 1 1 2 3 5 8 13 21 34 \mbox{[}INFO\mbox{]} \mbox{[}1693889853.\+153347930\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+client\mbox{]}\+: Next number in sequence received\+: 0 1 1 2 3 5 8 13 21 34 55 \mbox{[}INFO\mbox{]} \mbox{[}1693889854.\+153263697\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+client\mbox{]}\+: Result received\+: 0 1 1 2 3 5 8 13 21 34 55 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{-\/ server(it keeps running after the first goal is succeeded and waits for another request)}
+
+\end{DoxyCode}
+ docker@ros2\+:$\sim$/ws/src/ros2\+\_\+ws\$ ros2 run action\+\_\+tutorials\+\_\+cpp fibonacci\+\_\+action\+\_\+server \mbox{[}INFO\mbox{]} \mbox{[}1693889845.\+151792653\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+server\mbox{]}\+: Received goal request with order 10 \mbox{[}INFO\mbox{]} \mbox{[}1693889845.\+152439773\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+server\mbox{]}\+: Executing goal \mbox{[}INFO\mbox{]} \mbox{[}1693889845.\+152817284\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+server\mbox{]}\+: Publish feedback \mbox{[}INFO\mbox{]} \mbox{[}1693889846.\+152782472\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+server\mbox{]}\+: Publish feedback \mbox{[}INFO\mbox{]} \mbox{[}1693889847.\+152374881\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+server\mbox{]}\+: Publish feedback \mbox{[}INFO\mbox{]} \mbox{[}1693889848.\+152729281\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+server\mbox{]}\+: Publish feedback \mbox{[}INFO\mbox{]} \mbox{[}1693889849.\+153213684\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+server\mbox{]}\+: Publish feedback \mbox{[}INFO\mbox{]} \mbox{[}1693889850.\+153044611\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+server\mbox{]}\+: Publish feedback \mbox{[}INFO\mbox{]} \mbox{[}1693889851.\+152767172\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+server\mbox{]}\+: Publish feedback \mbox{[}INFO\mbox{]} \mbox{[}1693889852.\+152774342\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+server\mbox{]}\+: Publish feedback \mbox{[}INFO\mbox{]} \mbox{[}1693889853.\+153034720\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+server\mbox{]}\+: Publish feedback \mbox{[}INFO\mbox{]} \mbox{[}1693889854.\+152972188\mbox{]} \mbox{[}fibonacci\+\_\+action\+\_\+server\mbox{]}\+: Goal succeeded
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#\#\# Composing multiple nodes in a single process}
+\DoxyCodeLine{[About components](https://docs.ros.org/en/humble/Concepts/Intermediate/About-\/Composition.html)}
+\DoxyCodeLine{This tutorial uses rclcpp\_components, ros2component, and composition packages. Before we start, we should download the composition package into our workspace. That package ```composition``` is a demo package that runs in overlay. The other two packages, which are ```rclcpp\_components``` and ```ros2component```, are packages that runs in underlay and already downloaded in the ros distro ```/opt/ros/humble```. (It took me a while to realize that :D)}
+\DoxyCodeLine{}
+\DoxyCodeLine{-\/ [About ament\_cmake](https://docs.ros.org/en/humble/How-\/To-\/Guides/Ament-\/CMake-\/Documentation.html)}
+\DoxyCodeLine{    > ament\_cmake is the build system for CMake based packages in ROS 2 (in particular, it will be used for most C/C++ projects). }
+\DoxyCodeLine{}
+\DoxyCodeLine{So, we first download the package ```composition``` into our workspace, then build it, and source it.}
+
+\end{DoxyCode}
+ colcon build \# just build the whole workspace source install/setup.\+bash 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{To see what components are registered and available in the workspace:}
+
+\end{DoxyCode}
+ docker@ros2\+:$\sim$/ws/src/ros2\+\_\+ws\$ ros2 component types composition composition\+::\+Talker composition\+::\+Listener composition\+::\+Node\+Like\+Listener composition\+::\+Server composition\+::\+Client action\+\_\+tutorials\+\_\+cpp action\+\_\+tutorials\+\_\+cpp\+::\+Fibonacci\+Action\+Server action\+\_\+tutorials\+\_\+cpp\+::\+Fibonacci\+Action\+Client robot\+\_\+state\+\_\+publisher robot\+\_\+state\+\_\+publisher\+::\+Robot\+State\+Publisher tf2\+\_\+ros tf2\+\_\+ros\+::\+Static\+Transform\+Broadcaster\+Node 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{These are the available components, which is the ROS2 APIs.}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#\#\#\# Run-\/time composition using ROS services with a publisher and subscriber}
+\DoxyCodeLine{Run the node ```component\_containter``` in package ```rclcpp\_components``` first so that we can load components to run.}
+
+\end{DoxyCode}
+ ros2 run rclcpp\+\_\+components component\+\_\+container 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Then, in the second shell, verify that the component container is running properly:}
+
+\end{DoxyCode}
+ docker@ros2\+:$\sim$/ws/src/ros2\+\_\+ws\$ ros2 component list /\+Component\+Manager 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Once the container is running properly, we can now load the component ```composition::Talker``` inside the package ```composition``` into the container ```/ComponentManager```.}
+
+\end{DoxyCode}
+ docker@ros2\+:$\sim$/ws/src/ros2\+\_\+ws\$ ros2 component load /\+Component\+Manager composition composition\+::\+Talker Loaded component 1 into \textquotesingle{}/\+Component\+Manager\textquotesingle{} container node as \textquotesingle{}/talker\textquotesingle{} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Then, load the listener into the container as well.}
+
+\end{DoxyCode}
+ docker@ros2\+:$\sim$/ws/src/ros2\+\_\+ws\$ ros2 component load /\+Component\+Manager composition composition\+::\+Listener Loaded component 2 into \textquotesingle{}/\+Component\+Manager\textquotesingle{} container node as \textquotesingle{}/listener\textquotesingle{} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Now, we check the state of the components here:}
+
+\end{DoxyCode}
+ docker@ros2\+:$\sim$/ws/src/ros2\+\_\+ws\$ ros2 component list /\+Component\+Manager 1 /talker 2 /listener 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Once the listner and the talker are running, in the first terminal where the container is executed, messages are shown:}
+
+\end{DoxyCode}
+ ... \mbox{[}INFO\mbox{]} \mbox{[}1693994957.\+099389176\mbox{]} \mbox{[}talker\mbox{]}\+: Publishing\+: \textquotesingle{}Hello World\+: 108\textquotesingle{} \mbox{[}INFO\mbox{]} \mbox{[}1693994957.\+099621378\mbox{]} \mbox{[}listener\mbox{]}\+: I heard\+: \mbox{[}Hello World\+: 108\mbox{]} ... 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{We can unload the components using the unique id:}
+
+\end{DoxyCode}
+ ros2 component unload /\+Component\+Manager 1 2 
+\begin{DoxyCode}{0}
+
+\end{DoxyCode}
+ Unloaded component 1 from \textquotesingle{}/\+Component\+Manager\textquotesingle{} container Unloaded component 2 from \textquotesingle{}/\+Component\+Manager\textquotesingle{} container 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#\#\#\# Run-\/time composition using ROS services with a server and client}
+\DoxyCodeLine{Similar to the first example, we first execute the container in the first terminal, then run the server and client in the second terminal.}
+
+\end{DoxyCode}
+ ros2 run rclcpp\+\_\+components component\+\_\+container 
+\begin{DoxyCode}{0}
+
+\end{DoxyCode}
+ ros2 component load /\+Component\+Manager composition composition\+::\+Server ros2 component load /\+Component\+Manager composition composition\+::\+Client 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#\#\#\# Compile-\/time composition using ROS services}
+\DoxyCodeLine{>This demos shows that **the same shared libraries can be reused to compile a single executable running multiple components**. The executable contains all four components from above: talker and listener as well as server and client.}
+\DoxyCodeLine{}
+\DoxyCodeLine{To run all the components with the package's own source file:}
+
+\end{DoxyCode}
+ ros2 run composition manual\+\_\+composition 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#\#\#\# Run-\/time composition using dlopen}
+\DoxyCodeLine{> This demo presents an alternative to run-\/time composition by creating a generic container process and explicitly passing the libraries to load without using ROS interfaces. The process will open each library and create one instance of each “rclcpp::Node” class in the library source code.}
+
+\end{DoxyCode}
+ docker@ros2\+:$\sim$/ws/src/ros2\+\_\+ws\$ ros2 run composition dlopen\+\_\+composition {\ttfamily ros2 pkg prefix composition}/lib/libtalker\+\_\+component.so {\ttfamily ros2 pkg prefix composition}/lib/liblistener\+\_\+component.so \mbox{[}INFO\mbox{]} \mbox{[}1693996242.\+201452547\mbox{]} \mbox{[}dlopen\+\_\+composition\mbox{]}\+: Load library /home/docker/ws/src/ros2\+\_\+ws/src/install/composition/lib/libtalker\+\_\+component.so \mbox{[}INFO\mbox{]} \mbox{[}1693996242.\+274358002\mbox{]} \mbox{[}dlopen\+\_\+composition\mbox{]}\+: Instantiate class rclcpp\+\_\+components\+::\+Node\+Factory\+Template$<$composition\+::\+Talker$>$ \mbox{[}INFO\mbox{]} \mbox{[}1693996242.\+660578628\mbox{]} \mbox{[}dlopen\+\_\+composition\mbox{]}\+: Load library /home/docker/ws/src/ros2\+\_\+ws/src/install/composition/lib/liblistener\+\_\+component.so \mbox{[}INFO\mbox{]} \mbox{[}1693996242.\+774907073\mbox{]} \mbox{[}dlopen\+\_\+composition\mbox{]}\+: Instantiate class rclcpp\+\_\+components\+::\+Node\+Factory\+Template$<$composition\+::\+Listener$>$ \mbox{[}INFO\mbox{]} \mbox{[}1693996243.\+660757866\mbox{]} \mbox{[}talker\mbox{]}\+: Publishing\+: \textquotesingle{}Hello World\+: 1\textquotesingle{} \mbox{[}INFO\mbox{]} \mbox{[}1693996243.\+671404989\mbox{]} \mbox{[}listener\mbox{]}\+: I heard\+: \mbox{[}Hello World\+: 1\mbox{]} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{[About .so file](https://superuser.com/questions/71404/what-\/is-\/an-\/so-\/file)}
+\DoxyCodeLine{}
+\DoxyCodeLine{\#\#\#\# Composition using launch actions}
+\DoxyCodeLine{While the command line tools are useful for debugging and diagnosing component configurations, it is frequently more convenient to start a set of components at the same time. }
+
+\end{DoxyCode}
+ ros2 launch composition composition\+\_\+demo\+\_\+launch.\+py 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{(Note that there's a typo on the tutorial: ```composition\_demo.launch.py``` -\/> ```composition\_demo\_launch.py```)}
+\DoxyCodeLine{And here's the result:}
+
+\end{DoxyCode}
+ \mbox{[}INFO\mbox{]} \mbox{[}launch\mbox{]}\+: All log files can be found below /home/docker/.ros/log/2023-\/09-\/06-\/18-\/33-\/58-\/732464-\/ros2-\/9919 \mbox{[}INFO\mbox{]} \mbox{[}launch\mbox{]}\+: Default logging verbosity is set to INFO \mbox{[}INFO\mbox{]} \mbox{[}component\+\_\+container-\/1\mbox{]}\+: process started with pid \mbox{[}9932\mbox{]} \mbox{[}component\+\_\+container-\/1\mbox{]} \mbox{[}INFO\mbox{]} \mbox{[}1693996446.\+892453985\mbox{]} \mbox{[}my\+\_\+container\mbox{]}\+: Load Library\+: /home/docker/ws/src/ros2\+\_\+ws/src/install/composition/lib/libtalker\+\_\+component.so \mbox{[}component\+\_\+container-\/1\mbox{]} \mbox{[}INFO\mbox{]} \mbox{[}1693996446.\+975510948\mbox{]} \mbox{[}my\+\_\+container\mbox{]}\+: Found class\+: rclcpp\+\_\+components\+::\+Node\+Factory\+Template$<$composition\+::\+Talker$>$ \mbox{[}component\+\_\+container-\/1\mbox{]} \mbox{[}INFO\mbox{]} \mbox{[}1693996446.\+975592848\mbox{]} \mbox{[}my\+\_\+container\mbox{]}\+: Instantiate class\+: rclcpp\+\_\+components\+::\+Node\+Factory\+Template$<$composition\+::\+Talker$>$ \mbox{[}INFO\mbox{]} \mbox{[}launch\+\_\+ros.\+actions.\+load\+\_\+composable\+\_\+nodes\mbox{]}\+: Loaded node \textquotesingle{}/talker\textquotesingle{} in container \textquotesingle{}/my\+\_\+container\textquotesingle{} \mbox{[}component\+\_\+container-\/1\mbox{]} \mbox{[}INFO\mbox{]} \mbox{[}1693996447.\+333908942\mbox{]} \mbox{[}my\+\_\+container\mbox{]}\+: Load Library\+: /home/docker/ws/src/ros2\+\_\+ws/src/install/composition/lib/liblistener\+\_\+component.so \mbox{[}component\+\_\+container-\/1\mbox{]} \mbox{[}INFO\mbox{]} \mbox{[}1693996447.\+463670364\mbox{]} \mbox{[}my\+\_\+container\mbox{]}\+: Found class\+: rclcpp\+\_\+components\+::\+Node\+Factory\+Template$<$composition\+::\+Listener$>$ \mbox{[}component\+\_\+container-\/1\mbox{]} \mbox{[}INFO\mbox{]} \mbox{[}1693996447.\+463759565\mbox{]} \mbox{[}my\+\_\+container\mbox{]}\+: Instantiate class\+: rclcpp\+\_\+components\+::\+Node\+Factory\+Template$<$composition\+::\+Listener$>$ \mbox{[}INFO\mbox{]} \mbox{[}launch\+\_\+ros.\+actions.\+load\+\_\+composable\+\_\+nodes\mbox{]}\+: Loaded node \textquotesingle{}/listener\textquotesingle{} in container \textquotesingle{}/my\+\_\+container\textquotesingle{} \mbox{[}component\+\_\+container-\/1\mbox{]} \mbox{[}INFO\mbox{]} \mbox{[}1693996448.\+098694799\mbox{]} \mbox{[}talker\mbox{]}\+: Publishing\+: \textquotesingle{}Hello World\+: 1\textquotesingle{} \mbox{[}component\+\_\+container-\/1\mbox{]} \mbox{[}INFO\mbox{]} \mbox{[}1693996448.\+115580893\mbox{]} \mbox{[}listener\mbox{]}\+: I heard\+: \mbox{[}Hello World\+: 1\mbox{]} \mbox{[}component\+\_\+container-\/1\mbox{]} \mbox{[}INFO\mbox{]} \mbox{[}1693996449.\+098506663\mbox{]} \mbox{[}talker\mbox{]}\+: Publishing\+: \textquotesingle{}Hello World\+: 2\textquotesingle{} \mbox{[}component\+\_\+container-\/1\mbox{]} \mbox{[}INFO\mbox{]} \mbox{[}1693996449.\+099018766\mbox{]} \mbox{[}listener\mbox{]}\+: I heard\+: \mbox{[}Hello World\+: 2\mbox{]} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\#\#\#\# Some other usage}
+\DoxyCodeLine{We can remap the container name and namespace. For this example, the original node name was ComponentManager. Now, we name it as ```Mycontainer```, with namespace named ```ns```:}
+
+\end{DoxyCode}
+ ros2 run rclcpp\+\_\+components component\+\_\+container --ros-\/args -\/r \+\_\+\+\_\+node\+:=My\+Container -\/r \+\_\+\+\_\+ns\+:=/ns 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{So, we load components in such way:}
+
+\end{DoxyCode}
+ ros2 component load /ns/\+My\+Container composition composition\+::\+Listener 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Components names and namespaces can also be remapped:}
+
+\end{DoxyCode}
+ ros2 component load /\+Component\+Manager composition composition\+::\+Talker --node-\/name talker2 ros2 component load /\+Component\+Manager composition composition\+::\+Talker --node-\/namespace /ns ros2 component load /\+Component\+Manager composition composition\+::\+Talker --node-\/name talker3 --node-\/namespace /ns2 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Here's the result of ```ros2 component list}
+
+\end{DoxyCode}
+ 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{/ComponentManager}
+\DoxyCodeLine{   1  /talker2}
+\DoxyCodeLine{   2  /ns/talker}
+\DoxyCodeLine{   3  /ns2/talker3}
+
+\end{DoxyCode}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md161}{}\doxysubsection{Monitoring for parameter changes (\+C++)}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md161}
+Learn how to use {\ttfamily Parameter\+Event\+Handler} class to monitor the parameter changes to itself or others. However, this tutorial must be running the Galactic distribution of ROS2, while the one run by docker is the humble distribution. So, I\textquotesingle{}ll skip this part for now.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md162}{}\doxysubsection{Launch}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md162}
+ROS2 Launch files can run and configure multiple executables simultaneously, running multiple ROS2 nodes. \hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md163}{}\doxysubsubsection{Creating a Launch File}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md163}
+The launch files can be written in python, xml, or yaml files. \href{https://www.freecodecamp.org/news/what-is-yaml-the-yml-file-format/\#:~:text=YAML\%20is\%20a\%20human\%2Dreadable,application\%20using\%20a\%20standard\%20format.}{\texttt{ This is the article about xml, json, and yaml}} They are all configuration files for applications. I decided to try all three types of launch files. First, under the workspace direcotry {\ttfamily ros2\+\_\+ws}, create a directory {\ttfamily launch} to store all the launch files. Then, create the three launch files\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{mkdir launch}
+\DoxyCodeLine{cd launch}
+\DoxyCodeLine{touch turtlesim\_mimic\_launch.py\(\backslash\)}
+\DoxyCodeLine{  turtlesim\_mimic\_launch.xml\(\backslash\)}
+\DoxyCodeLine{  turtlesim\_mimic\_launch.yaml}
+
+\end{DoxyCode}
+
+\begin{DoxyItemize}
+\item For python\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{from launch import LaunchDescription}
+\DoxyCodeLine{from launch\_ros.actions import Node}
+\DoxyCodeLine{}
+\DoxyCodeLine{def generate\_launch\_description():}
+\DoxyCodeLine{    return LaunchDescription([}
+\DoxyCodeLine{        Node(}
+\DoxyCodeLine{            package='turtlesim',}
+\DoxyCodeLine{            namespace='turtlesim1',}
+\DoxyCodeLine{            executable='turtlesim\_node',}
+\DoxyCodeLine{            name='sim'}
+\DoxyCodeLine{        ),}
+\DoxyCodeLine{        Node(}
+\DoxyCodeLine{            package='turtlesim',}
+\DoxyCodeLine{            namespace='turtlesim2',}
+\DoxyCodeLine{            executable='turtlesim\_node',}
+\DoxyCodeLine{            name='sim'}
+\DoxyCodeLine{        ),}
+\DoxyCodeLine{        Node(}
+\DoxyCodeLine{            package='turtlesim',}
+\DoxyCodeLine{            executable='mimic',}
+\DoxyCodeLine{            name='mimic',}
+\DoxyCodeLine{            remappings=[}
+\DoxyCodeLine{                ('/input/pose', '/turtlesim1/turtle1/pose'),}
+\DoxyCodeLine{                ('/output/cmd\_vel', '/turtlesim2/turtle1/cmd\_vel'),}
+\DoxyCodeLine{            ]}
+\DoxyCodeLine{        )}
+\DoxyCodeLine{    ])}
+
+\end{DoxyCode}
+
+\item For xml 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{<launch>}
+\DoxyCodeLine{  <node pkg="{}turtlesim"{} exec="{}turtlesim\_node"{} name="{}sim"{} namespace="{}turtlesim1"{}/>}
+\DoxyCodeLine{  <node pkg="{}turtlesim"{} exec="{}turtlesim\_node"{} name="{}sim"{} namespace="{}turtlesim2"{}/>}
+\DoxyCodeLine{  <node pkg="{}turtlesim"{} exec="{}mimic"{} name="{}mimic"{}>}
+\DoxyCodeLine{    <remap from="{}/input/pose"{} to="{}/turtlesim1/turtle1/pose"{}/>}
+\DoxyCodeLine{    <remap from="{}/output/cmd\_vel"{} to="{}/turtlesim2/turtle1/cmd\_vel"{}/>}
+\DoxyCodeLine{  </node>}
+\DoxyCodeLine{</launch>}
+
+\end{DoxyCode}
+
+\item For yaml 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{launch:}
+\DoxyCodeLine{}
+\DoxyCodeLine{-\/ node:}
+\DoxyCodeLine{    pkg: "{}turtlesim"{}}
+\DoxyCodeLine{    exec: "{}turtlesim\_node"{}}
+\DoxyCodeLine{    name: "{}sim"{}}
+\DoxyCodeLine{    namespace: "{}turtlesim1"{}}
+\DoxyCodeLine{}
+\DoxyCodeLine{-\/ node:}
+\DoxyCodeLine{    pkg: "{}turtlesim"{}}
+\DoxyCodeLine{    exec: "{}turtlesim\_node"{}}
+\DoxyCodeLine{    name: "{}sim"{}}
+\DoxyCodeLine{    namespace: "{}turtlesim2"{}}
+\DoxyCodeLine{}
+\DoxyCodeLine{-\/ node:}
+\DoxyCodeLine{    pkg: "{}turtlesim"{}}
+\DoxyCodeLine{    exec: "{}mimic"{}}
+\DoxyCodeLine{    name: "{}mimic"{}}
+\DoxyCodeLine{    remap:}
+\DoxyCodeLine{    -\/}
+\DoxyCodeLine{        from: "{}/input/pose"{}}
+\DoxyCodeLine{        to: "{}/turtlesim1/turtle1/pose"{}}
+\DoxyCodeLine{    -\/}
+\DoxyCodeLine{        from: "{}/output/cmd\_vel"{}}
+\DoxyCodeLine{        to: "{}/turtlesim2/turtle1/cmd\_vel"{}}
+
+\end{DoxyCode}
+
+\end{DoxyItemize}
+
+Then, run the launch files\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 launch turtlesim\_mimic\_launch.<file\_type>}
+\DoxyCodeLine{}
+\DoxyCodeLine{\# file type could be .py .xml .yaml}
+
+\end{DoxyCode}
+ Two turtlesim windows would show up. Also, note that it\textquotesingle{}s possible that the launch file is inside a package. So that we should specify the package name while we\textquotesingle{}re launching a file\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 launch <package\_name> <launch\_file\_name>}
+
+\end{DoxyCode}
+ {\bfseries{Also, for packages that has launch file, it\textquotesingle{}s important to add}} 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{<exec\_depend>ros2launch</exec\_depend>}
+
+\end{DoxyCode}
+ {\bfseries{to the {\ttfamily package.\+xml} file. This helps make sure that the ros2 launch command is available after building your package. It also ensures that all launch file formats are recognized. (quoted from the tutorial)}}
+
+Here\textquotesingle{}s what happened after launching the files\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~/ws/src/ros2\_ws/launch\$ ros2 launch turtlesim\_mimic\_launch.py}
+\DoxyCodeLine{[INFO] [launch]: All log files can be found below /home/docker/.ros/log/2023-\/09-\/07-\/13-\/09-\/46-\/732492-\/ros2-\/153}
+\DoxyCodeLine{[INFO] [launch]: Default logging verbosity is set to INFO}
+\DoxyCodeLine{[INFO] [turtlesim\_node-\/1]: process started with pid [154]}
+\DoxyCodeLine{[INFO] [turtlesim\_node-\/2]: process started with pid [156]}
+\DoxyCodeLine{[INFO] [mimic-\/3]: process started with pid [158]}
+\DoxyCodeLine{[turtlesim\_node-\/2] QStandardPaths: XDG\_RUNTIME\_DIR not set, defaulting to '/tmp/runtime-\/docker'}
+\DoxyCodeLine{[turtlesim\_node-\/1] QStandardPaths: XDG\_RUNTIME\_DIR not set, defaulting to '/tmp/runtime-\/docker'}
+\DoxyCodeLine{[turtlesim\_node-\/1] [INFO] [1694063387.082140704] [turtlesim1.sim]: Starting turtlesim with node name /turtlesim1/sim}
+\DoxyCodeLine{[turtlesim\_node-\/2] [INFO] [1694063387.082376907] [turtlesim2.sim]: Starting turtlesim with node name /turtlesim2/sim}
+\DoxyCodeLine{[turtlesim\_node-\/2] [INFO] [1694063387.089878707] [turtlesim2.sim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]}
+\DoxyCodeLine{[turtlesim\_node-\/1] [INFO] [1694063387.089934608] [turtlesim1.sim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]}
+
+\end{DoxyCode}
+ Now, in another terminal, we use {\ttfamily ros2 pub} to publish informations onto the topic so that the turtle could start moving\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 topic pub -\/r 1 /turtlesim1/turtle1/cmd\_vel geometry\_msgs/msg/Twist "{}\{linear: \{x: 2.0, y: 0.0, z: 0.0\}, angular: \{x: 0.0, y: 0.0, z: -\/1.8\}\}"{}}
+
+\end{DoxyCode}
+ 
+
+Now, in another terminal, run {\ttfamily rqt\+\_\+graph} to see the whole graph of current running nodes. Remember to source the setup file first\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{source install/setup.bash}
+\DoxyCodeLine{rqt\_graph}
+
+\end{DoxyCode}
+ \hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md164}{}\doxysubsubsection{Integrating launch files into ROS2 packages}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md164}
+First, build another workspace {\ttfamily launch\+\_\+ws} and create an {\ttfamily src} directory underneath it. Afterwards, create a pacakge for demonstration\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{mkdir -\/p launch\_ws/src}
+\DoxyCodeLine{cd launch\_ws/src}
+\DoxyCodeLine{ros2 pkg create cpp\_launch\_example -\/-\/build-\/type ament\_cmake}
+
+\end{DoxyCode}
+ Now, add a few lines to {\ttfamily CMake\+Lists.\+txt} to install the launch files\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\# at the end of the file}
+\DoxyCodeLine{\# Install launch files.}
+\DoxyCodeLine{install(DIRECTORY}
+\DoxyCodeLine{  launch}
+\DoxyCodeLine{  DESTINATION share/\$\{PROJECT\_NAME\}/}
+\DoxyCodeLine{)}
+\DoxyCodeLine{}
+\DoxyCodeLine{\# before ament\_package()}
+\DoxyCodeLine{ament\_package()}
+
+\end{DoxyCode}
+ Then, create a {\ttfamily launch} directory and create three launch files\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{mkdir launch}
+\DoxyCodeLine{cd launch}
+\DoxyCodeLine{touch my\_script\_launch.py my\_script\_launch.xml my\_script\_launch.yaml}
+
+\end{DoxyCode}
+
+\begin{DoxyItemize}
+\item For python \begin{quote}
+{\bfseries{Inside your launch directory, create a new launch file called my\+\_\+script\+\_\+launch.\+py. \+\_\+launch.\+py is recommended, but not required, as the file suffix for Python launch files. However, the launch file name needs to end with launch.\+py to be recognized and autocompleted by ros2 launch.}} \end{quote}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{import launch}
+\DoxyCodeLine{import launch\_ros.actions}
+\DoxyCodeLine{}
+\DoxyCodeLine{def generate\_launch\_description(): \# this function must be named like this, and the return type is fixed as well}
+\DoxyCodeLine{  return launch.LaunchDescription([}
+\DoxyCodeLine{    launch\_ros.actions.Node(}
+\DoxyCodeLine{      package='demo\_nodes\_cpp',}
+\DoxyCodeLine{      executable='talker',}
+\DoxyCodeLine{      name='talker'),}
+\DoxyCodeLine{  ])}
+
+\end{DoxyCode}
+
+\item For xml \begin{quote}
+{\bfseries{Inside your launch directory, create a new launch file called my\+\_\+script\+\_\+launch.\+xml. \+\_\+launch.\+xml is recommended, but not required, as the file suffix for XML launch files.}} \end{quote}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{<launch>}
+\DoxyCodeLine{  <node pkg="{}demo\_nodes\_cpp"{} exec="{}talker"{} name="{}talker"{}/>}
+\DoxyCodeLine{</launch>}
+
+\end{DoxyCode}
+
+\item For yaml \begin{quote}
+{\bfseries{Inside your launch directory, create a new launch file called my\+\_\+script\+\_\+launch.\+yaml. \+\_\+launch.\+yaml is recommended, but not required, as the file suffix for YAML launch files.}} \end{quote}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{launch:}
+\DoxyCodeLine{}
+\DoxyCodeLine{-\/ node:}
+\DoxyCodeLine{  pkg: "{}demo\_nodes\_cpp"{}}
+\DoxyCodeLine{  exec: "{}talker"{}}
+\DoxyCodeLine{  name: "{}talker"{}}
+
+\end{DoxyCode}
+ Then, build it(in the root directory of the workspace), source it, then launch it. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{colcon build}
+\DoxyCodeLine{source install/setup.bash}
+\DoxyCodeLine{ros2 launch cpp\_launch\_example my\_script\_launch.<file\_type>}
+\DoxyCodeLine{\# file\_type could be .py .xml .yaml}
+
+\end{DoxyCode}
+ By the way, remember to install the package {\ttfamily demo\+\_\+nodes\+\_\+cpp} beforehand. Run the following code\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{sudo apt-\/get install ros-\/humble-\/demo-\/nodes-\/cpp}
+\DoxyCodeLine{source install/setup.bash}
+
+\end{DoxyCode}
+ This would install the package, note that {\ttfamily humble} term is the ros2 distro. If we\textquotesingle{}re using other distros, then substitute the token with other distro names. After the installation, you should see the package inside the diectory {\ttfamily /opt/ros/humble/share/demo\+\_\+nodes\+\_\+cpp}.
+\end{DoxyItemize}
+
+$\ast$$\ast$\+Remember that, if there\textquotesingle{}s any packages you want to install in the future about ros2, use the command 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{sudo apt-\/get install ros-\/<distro>-\/<pacakge\_name>}
+
+\end{DoxyCode}
+ Note that the package name should all be connected with \char`\"{}-\/\char`\"{} instead of \char`\"{}\+\_\+\char`\"{}. Then, the package with name connected with \char`\"{}\textbackslash{}\+\_\+\char`\"{} would be installed afterwards.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md165}{}\doxysubsubsection{Using substitutions}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md165}
+Substitutions\+:
+\begin{DoxyEnumerate}
+\item variables that are only evaluated during execution of the launch file
+\item can be used to acquire specific information like a launch configuration, an environment variable, or to evaluate an arbitrary Python expression.
+\end{DoxyEnumerate}
+
+\begin{quote}
+This tutorial shows usage examples of substitutions in ROS 2 launch files. \end{quote}
+First, create a pacakge under the {\ttfamily launch\+\_\+ws} workspace, and make a directory {\ttfamily launch} in it. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 pkg create launch\_tutorial -\/-\/build-\/type ament\_python}
+\DoxyCodeLine{mkdir launch\_tutorial/launch}
+
+\end{DoxyCode}
+
+
+Then, change the setup.\+py so that the launch files will be installed. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{import os \# new}
+\DoxyCodeLine{from glob import glob}
+\DoxyCodeLine{from setuptools import setup}
+\DoxyCodeLine{}
+\DoxyCodeLine{package\_name = 'launch\_tutorial'}
+\DoxyCodeLine{}
+\DoxyCodeLine{setup(}
+\DoxyCodeLine{    \# Other parameters ...}
+\DoxyCodeLine{    data\_files=[}
+\DoxyCodeLine{        \# ... Other data files}
+\DoxyCodeLine{        \# Include all launch files.}
+\DoxyCodeLine{        (os.path.join('share', package\_name, 'launch'), glob(os.path.join('launch', '*launch.[pxy][yma]*')))}
+\DoxyCodeLine{    ]}
+\DoxyCodeLine{)}
+
+\end{DoxyCode}
+ This part of the code is hardly understandable by first glance. So I went through a few links\+:
+\begin{DoxyItemize}
+\item \href{https://www.geeksforgeeks.org/python-os-path-join-method/}{\texttt{ About os.\+path.\+join()}}
+\item \href{https://ithelp.ithome.com.tw/articles/10262521}{\texttt{ About glob.\+glob()}}
+\item Also, the almighty Chat\+GPT First, the setup function defines the package\textquotesingle{}s metadata and configuration. {\ttfamily data\+\_\+files} is a list of 2-\/tuples where each tuple represents a destination directory and a list of files to include, which means include that list of files into the destination directory.
+\end{DoxyItemize}
+
+Then, let\textquotesingle{}s focus on the tuple we added. The first element of the tuple is the destination, which the {\ttfamily os.\+path.\+join()} method would return a string {\ttfamily share/launch\+\_\+tutorial/launch}, where we want to include the file described by the returned list of file names by the {\ttfamily glob} function.
+
+The {\ttfamily glob} function would return a list of file paths after searching {\ttfamily /launch/$\ast$launch.\mbox{[}pxy\mbox{]}\mbox{[}yma\mbox{]}$\ast$} returned by {\ttfamily os.\+path.\+join()}. What is that absurd string? Well, it\textquotesingle{}s special syntax for {\ttfamily glob} function. Just like how it behaves in Unix like system, $\ast$ means everything. And {\ttfamily \mbox{[}pxy\mbox{]}\mbox{[}yma\mbox{]}} would search for all with tokens {\ttfamily py}, {\ttfamily xm}, and {\ttfamily ya}. Is it clear now? It\textquotesingle{}ll search for launch files in the {\ttfamily .py}, {\ttfamily .xml}, and {\ttfamily .yaml} formats.
+
+Next, in the {\ttfamily launch} directory, create a {\bfseries{launch file that will call and pass arguments to another launch file}}. {\ttfamily example\+\_\+main.\+launch.\+py} (remember that the python launch files should be suffixed \char`\"{}launch.\+py\char`\"{}) 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{from launch\_ros.substitutions import FindPackageShare}
+\DoxyCodeLine{}
+\DoxyCodeLine{from launch import LaunchDescription}
+\DoxyCodeLine{from launch.actions import IncludeLaunchDescription}
+\DoxyCodeLine{from launch.launch\_description\_sources import PythonLaunchDescriptionSource}
+\DoxyCodeLine{from launch.substitutions import PathJoinSubstitution, TextSubstitution}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{def generate\_launch\_description():}
+\DoxyCodeLine{    colors = \{}
+\DoxyCodeLine{        'background\_r': '200'}
+\DoxyCodeLine{    \}}
+\DoxyCodeLine{}
+\DoxyCodeLine{    return LaunchDescription([}
+\DoxyCodeLine{        IncludeLaunchDescription(}
+\DoxyCodeLine{            PythonLaunchDescriptionSource([}
+\DoxyCodeLine{                PathJoinSubstitution([}
+\DoxyCodeLine{                    FindPackageShare('launch\_tutorial'),}
+\DoxyCodeLine{                    'launch',}
+\DoxyCodeLine{                    'example\_substitutions.launch.py'}
+\DoxyCodeLine{                ])}
+\DoxyCodeLine{            ]),}
+\DoxyCodeLine{            launch\_arguments=\{}
+\DoxyCodeLine{                'turtlesim\_ns': 'turtlesim2',}
+\DoxyCodeLine{                'use\_provided\_red': 'True',}
+\DoxyCodeLine{                'new\_background\_r': TextSubstitution(text=str(colors['background\_r']))}
+\DoxyCodeLine{            \}.items()}
+\DoxyCodeLine{        )}
+\DoxyCodeLine{    ])}
+
+\end{DoxyCode}
+
+
+And create {\ttfamily example\+\_\+substitutions.\+launch.\+py} in the {\ttfamily launch} directory as well. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{from launch\_ros.actions import Node}
+\DoxyCodeLine{}
+\DoxyCodeLine{from launch import LaunchDescription}
+\DoxyCodeLine{from launch.actions import DeclareLaunchArgument, ExecuteProcess, TimerAction}
+\DoxyCodeLine{from launch.conditions import IfCondition}
+\DoxyCodeLine{from launch.substitutions import LaunchConfiguration, PythonExpression}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{def generate\_launch\_description():}
+\DoxyCodeLine{    turtlesim\_ns = LaunchConfiguration('turtlesim\_ns')}
+\DoxyCodeLine{    use\_provided\_red = LaunchConfiguration('use\_provided\_red')}
+\DoxyCodeLine{    new\_background\_r = LaunchConfiguration('new\_background\_r')}
+\DoxyCodeLine{}
+\DoxyCodeLine{    turtlesim\_ns\_launch\_arg = DeclareLaunchArgument(}
+\DoxyCodeLine{        'turtlesim\_ns',}
+\DoxyCodeLine{        default\_value='turtlesim1'}
+\DoxyCodeLine{    )}
+\DoxyCodeLine{    use\_provided\_red\_launch\_arg = DeclareLaunchArgument(}
+\DoxyCodeLine{        'use\_provided\_red',}
+\DoxyCodeLine{        default\_value='False'}
+\DoxyCodeLine{    )}
+\DoxyCodeLine{    new\_background\_r\_launch\_arg = DeclareLaunchArgument(}
+\DoxyCodeLine{        'new\_background\_r',}
+\DoxyCodeLine{        default\_value='200'}
+\DoxyCodeLine{    )}
+\DoxyCodeLine{}
+\DoxyCodeLine{    turtlesim\_node = Node(}
+\DoxyCodeLine{        package='turtlesim',}
+\DoxyCodeLine{        namespace=turtlesim\_ns,}
+\DoxyCodeLine{        executable='turtlesim\_node',}
+\DoxyCodeLine{        name='sim'}
+\DoxyCodeLine{    )}
+\DoxyCodeLine{    spawn\_turtle = ExecuteProcess(}
+\DoxyCodeLine{        cmd=[[}
+\DoxyCodeLine{            'ros2 service call ',}
+\DoxyCodeLine{            turtlesim\_ns,}
+\DoxyCodeLine{            '/spawn ',}
+\DoxyCodeLine{            'turtlesim/srv/Spawn ',}
+\DoxyCodeLine{            '"{}\{x: 2, y: 2, theta: 0.2\}"{}'}
+\DoxyCodeLine{        ]],}
+\DoxyCodeLine{        shell=True}
+\DoxyCodeLine{    )}
+\DoxyCodeLine{    change\_background\_r = ExecuteProcess(}
+\DoxyCodeLine{        cmd=[[}
+\DoxyCodeLine{            'ros2 param set ',}
+\DoxyCodeLine{            turtlesim\_ns,}
+\DoxyCodeLine{            '/sim background\_r ',}
+\DoxyCodeLine{            '120'}
+\DoxyCodeLine{        ]],}
+\DoxyCodeLine{        shell=True}
+\DoxyCodeLine{    )}
+\DoxyCodeLine{    change\_background\_r\_conditioned = ExecuteProcess(}
+\DoxyCodeLine{        condition=IfCondition(}
+\DoxyCodeLine{            PythonExpression([}
+\DoxyCodeLine{                new\_background\_r,}
+\DoxyCodeLine{                ' == 200',}
+\DoxyCodeLine{                ' and ',}
+\DoxyCodeLine{                use\_provided\_red}
+\DoxyCodeLine{            ])}
+\DoxyCodeLine{        ),}
+\DoxyCodeLine{        cmd=[[}
+\DoxyCodeLine{            'ros2 param set ',}
+\DoxyCodeLine{            turtlesim\_ns,}
+\DoxyCodeLine{            '/sim background\_r ',}
+\DoxyCodeLine{            new\_background\_r}
+\DoxyCodeLine{        ]],}
+\DoxyCodeLine{        shell=True}
+\DoxyCodeLine{    )}
+\DoxyCodeLine{}
+\DoxyCodeLine{    return LaunchDescription([}
+\DoxyCodeLine{        turtlesim\_ns\_launch\_arg,}
+\DoxyCodeLine{        use\_provided\_red\_launch\_arg,}
+\DoxyCodeLine{        new\_background\_r\_launch\_arg,}
+\DoxyCodeLine{        turtlesim\_node,}
+\DoxyCodeLine{        spawn\_turtle,}
+\DoxyCodeLine{        change\_background\_r,}
+\DoxyCodeLine{        TimerAction(}
+\DoxyCodeLine{            period=2.0,}
+\DoxyCodeLine{            actions=[change\_background\_r\_conditioned],}
+\DoxyCodeLine{        )}
+\DoxyCodeLine{    ])}
+
+\end{DoxyCode}
+
+
+Then, as always, build it, source it. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{colcon build}
+\DoxyCodeLine{source install/setup.bash}
+
+\end{DoxyCode}
+ However, I ran into a some issues while building it. Here\textquotesingle{}s the error message\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{/usr/lib/python3/dist-\/packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated.}
+
+\end{DoxyCode}
+ I googled it \href{https://answers.ros.org/question/396439/setuptoolsdeprecationwarning-setuppy-install-is-deprecated-use-build-and-pip-and-other-standards-based-tools/}{\texttt{ here}} and turns out that the setuptools package was too new. The original version I had was 59.\+6.\+0, but the last available version was 58.\+2.\+0. So that I {\ttfamily pip3 install setuptools==58.\+2.\+0}, and source the setup files again. After that, the build was done successfully.
+
+Finally, we can launch it\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 launch launch\_tutorial example\_main.launch.py}
+
+\end{DoxyCode}
+ (quoted from the tutorial) Then the following four things would happen\+:
+\begin{DoxyEnumerate}
+\item Start a turtlesim node with a blue background
+\item Spawn the second turtle
+\item Change the color to purple
+\item Change the color to pink after two seconds if the provided {\ttfamily background\+\_\+r} argument is 200 and {\ttfamily use\+\_\+provided\+\_\+red} argument is {\ttfamily True}
+\end{DoxyEnumerate}
+
+We can also modify launch arguments that isn\textquotesingle{}t neccessarily defined in the launch file and could be done in the command line. The following command would show the arguments 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 launch launch\_tutorial example\_substitutions.launch.py -\/-\/show-\/args}
+
+\end{DoxyCode}
+ And it would return the argument configurations\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{Arguments (pass arguments as '<name>:=<value>'):}
+\DoxyCodeLine{}
+\DoxyCodeLine{    'turtlesim\_ns':}
+\DoxyCodeLine{        no description given}
+\DoxyCodeLine{        (default: 'turtlesim1')}
+\DoxyCodeLine{}
+\DoxyCodeLine{    'use\_provided\_red':}
+\DoxyCodeLine{        no description given}
+\DoxyCodeLine{        (default: 'False')}
+\DoxyCodeLine{}
+\DoxyCodeLine{    'new\_background\_r':}
+\DoxyCodeLine{        no description given}
+\DoxyCodeLine{        (default: '200')}
+
+\end{DoxyCode}
+ Which correspond with the code in {\ttfamily example\+\_\+substitutions.\+launch.\+py}\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{turtlesim\_ns\_launch\_arg = DeclareLaunchArgument(}
+\DoxyCodeLine{    'turtlesim\_ns',}
+\DoxyCodeLine{    default\_value='turtlesim1'}
+\DoxyCodeLine{)}
+\DoxyCodeLine{use\_provided\_red\_launch\_arg = DeclareLaunchArgument(}
+\DoxyCodeLine{    'use\_provided\_red',}
+\DoxyCodeLine{    default\_value='False'}
+\DoxyCodeLine{)}
+\DoxyCodeLine{new\_background\_r\_launch\_arg = DeclareLaunchArgument(}
+\DoxyCodeLine{    'new\_background\_r',}
+\DoxyCodeLine{    default\_value='200'}
+\DoxyCodeLine{)}
+
+\end{DoxyCode}
+ And we can modify those argument setups by\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ros2 launch launch\_tutorial example\_substitutions.launch.py turtlesim\_ns:='turtlesim3' use\_provided\_red:='True' new\_background\_r:=200}
+
+\end{DoxyCode}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md166}{}\doxysubsubsection{Using Event Handler}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md166}
+\begin{quote}
+{\bfseries{Launch in ROS 2 is a system that executes and manages user-\/defined processes. It is responsible for monitoring the state of processes it launched, as well as reporting and reacting to changes in the state of those processes. These changes are called events and can be handled by registering an event handler with the launch system. Event handlers can be registered for specific events and can be useful for monitoring the state of processes. Additionally, they can be used to define a complex set of rules which can be used to dynamically modify the launch file.}} \end{quote}
+In the package {\ttfamily launch\+\_\+tutorial}, create a file {\ttfamily example\+\_\+event\+\_\+handlers.\+launch.\+py} in {\ttfamily launch}. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{from launch\_ros.actions import Node}
+\DoxyCodeLine{}
+\DoxyCodeLine{from launch import LaunchDescription}
+\DoxyCodeLine{from launch.actions import (DeclareLaunchArgument, EmitEvent, ExecuteProcess,}
+\DoxyCodeLine{                            LogInfo, RegisterEventHandler, TimerAction)}
+\DoxyCodeLine{from launch.conditions import IfCondition}
+\DoxyCodeLine{from launch.event\_handlers import (OnExecutionComplete, OnProcessExit,}
+\DoxyCodeLine{                                OnProcessIO, OnProcessStart, OnShutdown)}
+\DoxyCodeLine{from launch.events import Shutdown}
+\DoxyCodeLine{from launch.substitutions import (EnvironmentVariable, FindExecutable,}
+\DoxyCodeLine{                                LaunchConfiguration, LocalSubstitution,}
+\DoxyCodeLine{                                PythonExpression)}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{def generate\_launch\_description():}
+\DoxyCodeLine{    turtlesim\_ns = LaunchConfiguration('turtlesim\_ns')}
+\DoxyCodeLine{    use\_provided\_red = LaunchConfiguration('use\_provided\_red')}
+\DoxyCodeLine{    new\_background\_r = LaunchConfiguration('new\_background\_r')}
+\DoxyCodeLine{}
+\DoxyCodeLine{    turtlesim\_ns\_launch\_arg = DeclareLaunchArgument(}
+\DoxyCodeLine{        'turtlesim\_ns',}
+\DoxyCodeLine{        default\_value='turtlesim1'}
+\DoxyCodeLine{    )}
+\DoxyCodeLine{    use\_provided\_red\_launch\_arg = DeclareLaunchArgument(}
+\DoxyCodeLine{        'use\_provided\_red',}
+\DoxyCodeLine{        default\_value='False'}
+\DoxyCodeLine{    )}
+\DoxyCodeLine{    new\_background\_r\_launch\_arg = DeclareLaunchArgument(}
+\DoxyCodeLine{        'new\_background\_r',}
+\DoxyCodeLine{        default\_value='200'}
+\DoxyCodeLine{    )}
+\DoxyCodeLine{}
+\DoxyCodeLine{    turtlesim\_node = Node(}
+\DoxyCodeLine{        package='turtlesim',}
+\DoxyCodeLine{        namespace=turtlesim\_ns,}
+\DoxyCodeLine{        executable='turtlesim\_node',}
+\DoxyCodeLine{        name='sim'}
+\DoxyCodeLine{    )}
+\DoxyCodeLine{    spawn\_turtle = ExecuteProcess(}
+\DoxyCodeLine{        cmd=[[}
+\DoxyCodeLine{            FindExecutable(name='ros2'),}
+\DoxyCodeLine{            ' service call ',}
+\DoxyCodeLine{            turtlesim\_ns,}
+\DoxyCodeLine{            '/spawn ',}
+\DoxyCodeLine{            'turtlesim/srv/Spawn ',}
+\DoxyCodeLine{            '"{}\{x: 2, y: 2, theta: 0.2\}"{}'}
+\DoxyCodeLine{        ]],}
+\DoxyCodeLine{        shell=True}
+\DoxyCodeLine{    )}
+\DoxyCodeLine{    change\_background\_r = ExecuteProcess(}
+\DoxyCodeLine{        cmd=[[}
+\DoxyCodeLine{            FindExecutable(name='ros2'),}
+\DoxyCodeLine{            ' param set ',}
+\DoxyCodeLine{            turtlesim\_ns,}
+\DoxyCodeLine{            '/sim background\_r ',}
+\DoxyCodeLine{            '120'}
+\DoxyCodeLine{        ]],}
+\DoxyCodeLine{        shell=True}
+\DoxyCodeLine{    )}
+\DoxyCodeLine{    change\_background\_r\_conditioned = ExecuteProcess(}
+\DoxyCodeLine{        condition=IfCondition(}
+\DoxyCodeLine{            PythonExpression([}
+\DoxyCodeLine{                new\_background\_r,}
+\DoxyCodeLine{                ' == 200',}
+\DoxyCodeLine{                ' and ',}
+\DoxyCodeLine{                use\_provided\_red}
+\DoxyCodeLine{            ])}
+\DoxyCodeLine{        ),}
+\DoxyCodeLine{        cmd=[[}
+\DoxyCodeLine{            FindExecutable(name='ros2'),}
+\DoxyCodeLine{            ' param set ',}
+\DoxyCodeLine{            turtlesim\_ns,}
+\DoxyCodeLine{            '/sim background\_r ',}
+\DoxyCodeLine{            new\_background\_r}
+\DoxyCodeLine{        ]],}
+\DoxyCodeLine{        shell=True}
+\DoxyCodeLine{    )}
+\DoxyCodeLine{}
+\DoxyCodeLine{    return LaunchDescription([}
+\DoxyCodeLine{        turtlesim\_ns\_launch\_arg,}
+\DoxyCodeLine{        use\_provided\_red\_launch\_arg,}
+\DoxyCodeLine{        new\_background\_r\_launch\_arg,}
+\DoxyCodeLine{        turtlesim\_node,}
+\DoxyCodeLine{        RegisterEventHandler(}
+\DoxyCodeLine{            OnProcessStart(}
+\DoxyCodeLine{                target\_action=turtlesim\_node,}
+\DoxyCodeLine{                on\_start=[}
+\DoxyCodeLine{                    LogInfo(msg='Turtlesim started, spawning turtle'),}
+\DoxyCodeLine{                    spawn\_turtle}
+\DoxyCodeLine{                ]}
+\DoxyCodeLine{            )}
+\DoxyCodeLine{        ),}
+\DoxyCodeLine{        RegisterEventHandler(}
+\DoxyCodeLine{            OnProcessIO(}
+\DoxyCodeLine{                target\_action=spawn\_turtle,}
+\DoxyCodeLine{                on\_stdout=lambda event: LogInfo(}
+\DoxyCodeLine{                    msg='Spawn request says "{}\{\}"{}'.format(}
+\DoxyCodeLine{                        event.text.decode().strip())}
+\DoxyCodeLine{                )}
+\DoxyCodeLine{            )}
+\DoxyCodeLine{        ),}
+\DoxyCodeLine{        RegisterEventHandler(}
+\DoxyCodeLine{            OnExecutionComplete(}
+\DoxyCodeLine{                target\_action=spawn\_turtle,}
+\DoxyCodeLine{                on\_completion=[}
+\DoxyCodeLine{                    LogInfo(msg='Spawn finished'),}
+\DoxyCodeLine{                    change\_background\_r,}
+\DoxyCodeLine{                    TimerAction(}
+\DoxyCodeLine{                        period=2.0,}
+\DoxyCodeLine{                        actions=[change\_background\_r\_conditioned],}
+\DoxyCodeLine{                    )}
+\DoxyCodeLine{                ]}
+\DoxyCodeLine{            )}
+\DoxyCodeLine{        ),}
+\DoxyCodeLine{        RegisterEventHandler(}
+\DoxyCodeLine{            OnProcessExit(}
+\DoxyCodeLine{                target\_action=turtlesim\_node,}
+\DoxyCodeLine{                on\_exit=[}
+\DoxyCodeLine{                    LogInfo(msg=(EnvironmentVariable(name='USER'),}
+\DoxyCodeLine{                            ' closed the turtlesim window')),}
+\DoxyCodeLine{                    EmitEvent(event=Shutdown(}
+\DoxyCodeLine{                        reason='Window closed'))}
+\DoxyCodeLine{                ]}
+\DoxyCodeLine{            )}
+\DoxyCodeLine{        ),}
+\DoxyCodeLine{        RegisterEventHandler(}
+\DoxyCodeLine{            OnShutdown(}
+\DoxyCodeLine{                on\_shutdown=[LogInfo(}
+\DoxyCodeLine{                    msg=['Launch was asked to shutdown: ',}
+\DoxyCodeLine{                        LocalSubstitution('event.reason')]}
+\DoxyCodeLine{                )]}
+\DoxyCodeLine{            )}
+\DoxyCodeLine{        ),}
+\DoxyCodeLine{    ])}
+
+\end{DoxyCode}
+
+
+The {\ttfamily Register\+Event\+Handler()} would register event handlers, which are a few actions, such as On\+Process\+Start, On\+Process\+IO, On\+Execution\+Complete, On\+Process\+Exit, and On\+Shutdown. The events were defined in the description.
+
+After that, build it, source it, then run it. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{colcon build}
+\DoxyCodeLine{source install/setup.bash}
+\DoxyCodeLine{ros2 launch launch\_tutorial example\_event\_handlers.launch.py turtlesim\_ns:='turtlesim3' use\_provided\_red:='True' new\_background\_r:=200}
+
+\end{DoxyCode}
+ (remember that these are argument setups)
+
+ The log infos\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{[INFO] [launch]: All log files can be found below /home/docker/.ros/log/2023-\/09-\/08-\/08-\/19-\/47-\/605832-\/ros2-\/210}
+\DoxyCodeLine{[INFO] [launch]: Default logging verbosity is set to INFO}
+\DoxyCodeLine{[INFO] [turtlesim\_node-\/1]: process started with pid [211]}
+\DoxyCodeLine{[INFO] [launch.user]: Turtlesim started, spawning turtle \#}
+\DoxyCodeLine{[INFO] [Spawn "{}\{x: 2, y: 2, theta: 0.2\}"{}-\/2]: process started with pid [213]}
+\DoxyCodeLine{[turtlesim\_node-\/1] QStandardPaths: XDG\_RUNTIME\_DIR not set, defaulting to '/tmp/runtime-\/docker'}
+\DoxyCodeLine{[turtlesim\_node-\/1] [INFO] [1694132390.797659651] [turtlesim3.sim]: Starting turtlesim with node name /turtlesim3/sim}
+\DoxyCodeLine{[turtlesim\_node-\/1] [INFO] [1694132390.922368520] [turtlesim3.sim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]}
+\DoxyCodeLine{[INFO] [launch.user]: Spawn request says "{}requester: making request: turtlesim.srv.Spawn\_Request(x=2.0, y=2.0, theta=0.2, name='')"{} \#}
+\DoxyCodeLine{[turtlesim\_node-\/1] [INFO] [1694132394.946573205] [turtlesim3.sim]: Spawning turtle [turtle2] at x=[2.000000], y=[2.000000], theta=[0.200000]}
+\DoxyCodeLine{[INFO] [launch.user]: Spawn request says "{}response: \#}
+\DoxyCodeLine{turtlesim.srv.Spawn\_Response(name='turtle2')"{}}
+\DoxyCodeLine{[INFO] [Spawn "{}\{x: 2, y: 2, theta: 0.2\}"{}-\/2]: process has finished cleanly [pid 213]}
+\DoxyCodeLine{[INFO] [launch.user]: Spawn finished \#}
+\DoxyCodeLine{[INFO] [sim background\_r 120-\/3]: process started with pid [250]}
+\DoxyCodeLine{[INFO] [sim background\_r 200-\/4]: process started with pid [253]}
+\DoxyCodeLine{[INFO] [sim background\_r 120-\/3]: process has finished cleanly [pid 250]}
+\DoxyCodeLine{[INFO] [sim background\_r 200-\/4]: process has finished cleanly [pid 253]}
+\DoxyCodeLine{[INFO] [turtlesim\_node-\/1]: process has finished cleanly [pid 211]}
+\DoxyCodeLine{[INFO] [launch.user]: docker closed the turtlesim window \#}
+\DoxyCodeLine{[INFO] [launch.user]: Launch was asked to shutdown: Window closed \#}
+
+\end{DoxyCode}
+ (quoted from the tutorial)
+
+This will do the following\+:
+\begin{DoxyEnumerate}
+\item Start a turtlesim node with a blue background
+\item Spawn the second turtle
+\item Change the color to purple
+\item Change the color to pink after two seconds if the provided background\+\_\+r argument is 200 and use\+\_\+provided\+\_\+red argument is True
+\item Shutdown the launch file when the turtlesim window is closed
+\end{DoxyEnumerate}
+
+Additionally, it will log messages to the console when\+:
+\begin{DoxyEnumerate}
+\item The turtlesim node starts
+\item The spawn action is executed
+\item The change\+\_\+background\+\_\+r action is executed
+\item The change\+\_\+background\+\_\+r\+\_\+conditioned action is executed
+\item The turtlesim node exits
+\item The launch process is asked to shutdown.
+\end{DoxyEnumerate}\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md167}{}\doxysubsubsection{Managing large projects}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md167}
+\begin{quote}
+This tutorial describes some tips for writing launch files for large projects. {\bfseries{The focus is on how to structure launch files so they may be reused as much as possible in different situations}}. Additionally, it covers usage examples of different ROS 2 launch tools, like parameters, YAML files, remappings, namespaces, default arguments, and RViz configs. \end{quote}
+This tutorial is using turtle\+\_\+tf2\+\_\+py package, so we should install that before getting started 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{sudo apt-\/get install ros-\/humble-\/turtle-\/tf2-\/py}
+
+\end{DoxyCode}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md168}{}\doxyparagraph{Top Level organization}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md168}
+Running ROS2 in a robot may involve many nodes which are responsible for many different tasks. So we\textquotesingle{}re simulating that circumstance with multiple nodes related to turtlesim.
+
+First, we go through the {\bfseries{top level}} launch file structure, create {\ttfamily launch\+\_\+turtlesim.\+launch.\+py} under {\ttfamily launch} directory\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{import os}
+\DoxyCodeLine{}
+\DoxyCodeLine{from ament\_index\_python.packages import get\_package\_share\_directory}
+\DoxyCodeLine{}
+\DoxyCodeLine{from launch import LaunchDescription}
+\DoxyCodeLine{from launch.actions import IncludeLaunchDescription}
+\DoxyCodeLine{from launch.launch\_description\_sources import PythonLaunchDescriptionSource}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{def generate\_launch\_description():}
+\DoxyCodeLine{   turtlesim\_world\_1 = IncludeLaunchDescription(}
+\DoxyCodeLine{      PythonLaunchDescriptionSource([os.path.join(}
+\DoxyCodeLine{         get\_package\_share\_directory('launch\_tutorial'), 'launch'),}
+\DoxyCodeLine{         '/turtlesim\_world\_1.launch.py'])}
+\DoxyCodeLine{      )}
+\DoxyCodeLine{   turtlesim\_world\_2 = IncludeLaunchDescription(}
+\DoxyCodeLine{      PythonLaunchDescriptionSource([os.path.join(}
+\DoxyCodeLine{         get\_package\_share\_directory('launch\_tutorial'), 'launch'),}
+\DoxyCodeLine{         '/turtlesim\_world\_2.launch.py'])}
+\DoxyCodeLine{      )}
+\DoxyCodeLine{   broadcaster\_listener\_nodes = IncludeLaunchDescription(}
+\DoxyCodeLine{      PythonLaunchDescriptionSource([os.path.join(}
+\DoxyCodeLine{         get\_package\_share\_directory('launch\_tutorial'), 'launch'),}
+\DoxyCodeLine{         '/broadcaster\_listener.launch.py']),}
+\DoxyCodeLine{      launch\_arguments=\{'target\_frame': 'carrot1'\}.items(),}
+\DoxyCodeLine{      )}
+\DoxyCodeLine{   mimic\_node = IncludeLaunchDescription(}
+\DoxyCodeLine{      PythonLaunchDescriptionSource([os.path.join(}
+\DoxyCodeLine{         get\_package\_share\_directory('launch\_tutorial'), 'launch'),}
+\DoxyCodeLine{         '/mimic.launch.py'])}
+\DoxyCodeLine{      )}
+\DoxyCodeLine{   fixed\_frame\_node = IncludeLaunchDescription(}
+\DoxyCodeLine{      PythonLaunchDescriptionSource([os.path.join(}
+\DoxyCodeLine{         get\_package\_share\_directory('launch\_tutorial'), 'launch'),}
+\DoxyCodeLine{         '/fixed\_broadcaster.launch.py'])}
+\DoxyCodeLine{      )}
+\DoxyCodeLine{   rviz\_node = IncludeLaunchDescription(}
+\DoxyCodeLine{      PythonLaunchDescriptionSource([os.path.join(}
+\DoxyCodeLine{         get\_package\_share\_directory('launch\_tutorial'), 'launch'),}
+\DoxyCodeLine{         '/turtlesim\_rviz.launch.py'])}
+\DoxyCodeLine{      )}
+\DoxyCodeLine{}
+\DoxyCodeLine{   return LaunchDescription([}
+\DoxyCodeLine{      turtlesim\_world\_1,}
+\DoxyCodeLine{      turtlesim\_world\_2,}
+\DoxyCodeLine{      broadcaster\_listener\_nodes,}
+\DoxyCodeLine{      mimic\_node,}
+\DoxyCodeLine{      fixed\_frame\_node,}
+\DoxyCodeLine{      rviz\_node}
+\DoxyCodeLine{   ])}
+
+\end{DoxyCode}
+ (quoted from the tutorial)
+\begin{DoxyItemize}
+\item This launch file includes a set of other launch files. Each of these included launch files contains nodes, parameters, and possibly, nested includes, which pertain to one part of the system. To be exact, we launch two turtlesim simulation worlds, TF broadcaster, TF listener, mimic, fixed frame broadcaster, and RViz nodes.
+\item The top-\/level launch file should be short. Details are included by the low-\/level launch files. However, we should be aware of the tradeoffs.
+\end{DoxyItemize}\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md169}{}\doxyparagraph{Parameters}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md169}
+Now, we should set parameters in the launch file structure, so create {\ttfamily turtlesim\+\_\+world\+\_\+1.\+launch.\+py}\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{from launch import LaunchDescription}
+\DoxyCodeLine{from launch.actions import DeclareLaunchArgument}
+\DoxyCodeLine{from launch.substitutions import LaunchConfiguration, TextSubstitution}
+\DoxyCodeLine{}
+\DoxyCodeLine{from launch\_ros.actions import Node}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{def generate\_launch\_description():}
+\DoxyCodeLine{   background\_r\_launch\_arg = DeclareLaunchArgument(}
+\DoxyCodeLine{      'background\_r', default\_value=TextSubstitution(text='0')}
+\DoxyCodeLine{   )}
+\DoxyCodeLine{   background\_g\_launch\_arg = DeclareLaunchArgument(}
+\DoxyCodeLine{      'background\_g', default\_value=TextSubstitution(text='84')}
+\DoxyCodeLine{   )}
+\DoxyCodeLine{   background\_b\_launch\_arg = DeclareLaunchArgument(}
+\DoxyCodeLine{      'background\_b', default\_value=TextSubstitution(text='122')}
+\DoxyCodeLine{   )}
+\DoxyCodeLine{}
+\DoxyCodeLine{   return LaunchDescription([}
+\DoxyCodeLine{      background\_r\_launch\_arg,}
+\DoxyCodeLine{      background\_g\_launch\_arg,}
+\DoxyCodeLine{      background\_b\_launch\_arg,}
+\DoxyCodeLine{      Node(}
+\DoxyCodeLine{         package='turtlesim',}
+\DoxyCodeLine{         executable='turtlesim\_node',}
+\DoxyCodeLine{         name='sim',}
+\DoxyCodeLine{         parameters=[\{}
+\DoxyCodeLine{            'background\_r': LaunchConfiguration('background\_r'),}
+\DoxyCodeLine{            'background\_g': LaunchConfiguration('background\_g'),}
+\DoxyCodeLine{            'background\_b': LaunchConfiguration('background\_b'),}
+\DoxyCodeLine{         \}]}
+\DoxyCodeLine{      ),}
+\DoxyCodeLine{   ])}
+
+\end{DoxyCode}
+ The code above launches a turtlesim node simulation, with configuration parameters defined and passed to it.
+
+Now, we want to create another turtlesim simulation, so create {\ttfamily turtlesim\+\_\+world\+\_\+2.\+launch.\+py}\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{import os}
+\DoxyCodeLine{}
+\DoxyCodeLine{from ament\_index\_python.packages import get\_package\_share\_directory}
+\DoxyCodeLine{}
+\DoxyCodeLine{from launch import LaunchDescription}
+\DoxyCodeLine{from launch\_ros.actions import Node}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{def generate\_launch\_description():}
+\DoxyCodeLine{   config = os.path.join(}
+\DoxyCodeLine{      get\_package\_share\_directory('launch\_tutorial'),}
+\DoxyCodeLine{      'config',}
+\DoxyCodeLine{      'turtlesim.yaml'}
+\DoxyCodeLine{      )}
+\DoxyCodeLine{}
+\DoxyCodeLine{   return LaunchDescription([}
+\DoxyCodeLine{      Node(}
+\DoxyCodeLine{         package='turtlesim',}
+\DoxyCodeLine{         executable='turtlesim\_node',}
+\DoxyCodeLine{         namespace='turtlesim2',}
+\DoxyCodeLine{         name='sim',}
+\DoxyCodeLine{         parameters=[config]}
+\DoxyCodeLine{      )}
+\DoxyCodeLine{   ])}
+
+\end{DoxyCode}
+ This would load the configuration parameters directly from the {\ttfamily turtlesim.\+yaml} file. With {\ttfamily yaml} files, it\textquotesingle{}s easier to manage large configuration set of parameters. In addition, {\ttfamily yaml} files can be easily exported from the current ros2 param list. So now we create a directory {\ttfamily config} in our package, then create {\ttfamily turtlesim.\+yaml} inside. 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{/turtlesim2/sim:}
+\DoxyCodeLine{   ros\_\_parameters:}
+\DoxyCodeLine{      background\_b: 255}
+\DoxyCodeLine{      background\_g: 86}
+\DoxyCodeLine{      background\_r: 150}
+
+\end{DoxyCode}
+
+
+However, that set of configuration parameters are only for the node {\ttfamily sim} in the {\ttfamily turtlesim2} namespace. What if we want to set these config parameters to multiple nodes in different namespaces? We can use the {\bfseries{wildcard}} syntax -\/$>$ {\ttfamily /$\ast$$\ast$}. In this way, all the launch files include this {\ttfamily yaml} file could apply this set of parameters. Thus, we could change {\ttfamily turtlesim.\+yaml} to\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{/**:}
+\DoxyCodeLine{   ros\_\_parameters:}
+\DoxyCodeLine{      background\_b: 255}
+\DoxyCodeLine{      background\_g: 86}
+\DoxyCodeLine{      background\_r: 150}
+
+\end{DoxyCode}
+ Also, create {\ttfamily turtlesim\+\_\+world\+\_\+3.\+launch.\+py} which could demonstrate this syntax\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\# same as turtlesim\_world\_2.launch.py but just add another node}
+\DoxyCodeLine{Node(}
+\DoxyCodeLine{   package='turtlesim',}
+\DoxyCodeLine{   executable='turtlesim\_node',}
+\DoxyCodeLine{   namespace='turtlesim3',}
+\DoxyCodeLine{   name='sim',}
+\DoxyCodeLine{   parameters=[config]}
+\DoxyCodeLine{)}
+
+\end{DoxyCode}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md170}{}\doxyparagraph{Namespaces}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md170}
+(quoted from the tutorial) Using unique namespaces allow the system to start two similar nodes without node name or topic name conflicts. However, if the launch file contains a large number of nodes, defining namespaces for each of them can become tedious. To solve that issue, {\bfseries{the {\ttfamily Push\+Ros\+Namespace} action can be used to define the global namespace for each launch file description. Every nested node will inherit that namespace automatically.}}
+
+First, remove the namespace specification {\ttfamily namespace=\textquotesingle{}turtlesim2\textquotesingle{}} from the launch file first. Then, in the top-\/level launch file {\ttfamily launch\+\_\+turtlesim.\+launch.\+py}, add\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{from launch.actions import GroupAction}
+\DoxyCodeLine{from launch\_ros.actions import PushRosNamespace}
+\DoxyCodeLine{}
+\DoxyCodeLine{   ...}
+\DoxyCodeLine{   turtlesim\_world\_2 = IncludeLaunchDescription(}
+\DoxyCodeLine{      PythonLaunchDescriptionSource([os.path.join(}
+\DoxyCodeLine{         get\_package\_share\_directory('launch\_tutorial'), 'launch'),}
+\DoxyCodeLine{         '/turtlesim\_world\_2.launch.py'])}
+\DoxyCodeLine{      )}
+\DoxyCodeLine{   turtlesim\_world\_2\_with\_namespace = GroupAction(}
+\DoxyCodeLine{     actions=[}
+\DoxyCodeLine{         PushRosNamespace('turtlesim2'),}
+\DoxyCodeLine{         turtlesim\_world\_2,}
+\DoxyCodeLine{      ]}
+\DoxyCodeLine{   )}
+
+\end{DoxyCode}
+ Replace {\ttfamily turtlesim\+\_\+world\+\_\+2} with {\ttfamily turtlesim\+\_\+world\+\_\+2\+\_\+with\+\_\+namespace} which has Push\+Ros\+Namespace in the first place.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md171}{}\doxyparagraph{Reusing the nodes}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md171}
+Create a launch file {\ttfamily broadcaster\+\_\+listener.\+launch.\+py}\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{from launch import LaunchDescription}
+\DoxyCodeLine{from launch.actions import DeclareLaunchArgument}
+\DoxyCodeLine{from launch.substitutions import LaunchConfiguration}
+\DoxyCodeLine{}
+\DoxyCodeLine{from launch\_ros.actions import Node}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{def generate\_launch\_description():}
+\DoxyCodeLine{   return LaunchDescription([}
+\DoxyCodeLine{      DeclareLaunchArgument(}
+\DoxyCodeLine{         'target\_frame', default\_value='turtle1',}
+\DoxyCodeLine{         description='Target frame name.'}
+\DoxyCodeLine{      ),}
+\DoxyCodeLine{      Node(}
+\DoxyCodeLine{         package='turtle\_tf2\_py',}
+\DoxyCodeLine{         executable='turtle\_tf2\_broadcaster',}
+\DoxyCodeLine{         name='broadcaster1',}
+\DoxyCodeLine{         parameters=[}
+\DoxyCodeLine{            \{'turtlename': 'turtle1'\}}
+\DoxyCodeLine{         ]}
+\DoxyCodeLine{      ),}
+\DoxyCodeLine{      Node(}
+\DoxyCodeLine{         package='turtle\_tf2\_py',}
+\DoxyCodeLine{         executable='turtle\_tf2\_broadcaster',}
+\DoxyCodeLine{         name='broadcaster2',}
+\DoxyCodeLine{         parameters=[}
+\DoxyCodeLine{            \{'turtlename': 'turtle2'\}}
+\DoxyCodeLine{         ]}
+\DoxyCodeLine{      ),}
+\DoxyCodeLine{      Node(}
+\DoxyCodeLine{         package='turtle\_tf2\_py',}
+\DoxyCodeLine{         executable='turtle\_tf2\_listener',}
+\DoxyCodeLine{         name='listener',}
+\DoxyCodeLine{         parameters=[}
+\DoxyCodeLine{            \{'target\_frame': LaunchConfiguration('target\_frame')\}}
+\DoxyCodeLine{         ]}
+\DoxyCodeLine{      ),}
+\DoxyCodeLine{   ])}
+
+\end{DoxyCode}
+
+
+We can reuse the nodes by giving them different names. In the above launch file, we\textquotesingle{}ve declared a launch argument {\ttfamily target\+\_\+frame}. The argument would be passed to the node, and default value is set to \textquotesingle{}turtle1\textquotesingle{}.
+
+We can override the parameters. In the top level launch file, we\textquotesingle{}ve called the {\ttfamily broadcaster\+\_\+listener.\+launch.\+py} file. We\textquotesingle{}ve passed that launch file {\ttfamily target\+\_\+frame} launch argument as shown below\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{broadcaster\_listener\_nodes = IncludeLaunchDescription(}
+\DoxyCodeLine{   PythonLaunchDescriptionSource([os.path.join(}
+\DoxyCodeLine{      get\_package\_share\_directory('launch\_tutorial'), 'launch'),}
+\DoxyCodeLine{      '/broadcaster\_listener.launch.py']),}
+\DoxyCodeLine{   launch\_arguments=\{'target\_frame': 'carrot1'\}.items(),}
+\DoxyCodeLine{   )}
+
+\end{DoxyCode}
+ The default goal target frame is changed to {\ttfamily carrot1}. If we want to use that default value {\ttfamily turtle1}, just remove that line.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md172}{}\doxyparagraph{Remapping}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md172}
+Create a file {\ttfamily mimic.\+launch.\+py}\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{from launch import LaunchDescription}
+\DoxyCodeLine{from launch\_ros.actions import Node}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{def generate\_launch\_description():}
+\DoxyCodeLine{   return LaunchDescription([}
+\DoxyCodeLine{      Node(}
+\DoxyCodeLine{         package='turtlesim',}
+\DoxyCodeLine{         executable='mimic',}
+\DoxyCodeLine{         name='mimic',}
+\DoxyCodeLine{         remappings=[}
+\DoxyCodeLine{            ('/input/pose', '/turtle2/pose'),}
+\DoxyCodeLine{            ('/output/cmd\_vel', '/turtlesim2/turtle1/cmd\_vel'),}
+\DoxyCodeLine{         ]}
+\DoxyCodeLine{      )}
+\DoxyCodeLine{   ])}
+
+\end{DoxyCode}
+
+
+This would start a node called mimic using an executable {\ttfamily mimic} in package {\ttfamily turtlesim}. Then, we want to remap the topic {\ttfamily /input/pose} of mimic to {\ttfamily /turtle2/pose} of turtle2, and remap {\ttfamily /output/cmd\+\_\+vel} of mimic to {\ttfamily /turtlesim2/turtle1/cmd\+\_\+vel} of turtle1. This would pass the pose of turtle2, to the mimic node, and the mimic node would pass the message to the turtle1, resulting in turtle1 mimicing turtle2.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md173}{}\doxyparagraph{Config files}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md173}
+Create a file {\ttfamily turtlesim\+\_\+rviz.\+launch.\+py}\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{import os}
+\DoxyCodeLine{}
+\DoxyCodeLine{from ament\_index\_python.packages import get\_package\_share\_directory}
+\DoxyCodeLine{}
+\DoxyCodeLine{from launch import LaunchDescription}
+\DoxyCodeLine{from launch\_ros.actions import Node}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{def generate\_launch\_description():}
+\DoxyCodeLine{   rviz\_config = os.path.join(}
+\DoxyCodeLine{      get\_package\_share\_directory('turtle\_tf2\_py'),}
+\DoxyCodeLine{      'rviz',}
+\DoxyCodeLine{      'turtle\_rviz.rviz'}
+\DoxyCodeLine{      )}
+\DoxyCodeLine{}
+\DoxyCodeLine{   return LaunchDescription([}
+\DoxyCodeLine{      Node(}
+\DoxyCodeLine{         package='rviz2',}
+\DoxyCodeLine{         executable='rviz2',}
+\DoxyCodeLine{         name='rviz2',}
+\DoxyCodeLine{         arguments=['-\/d', rviz\_config]}
+\DoxyCodeLine{      )}
+\DoxyCodeLine{   ])}
+
+\end{DoxyCode}
+ What is RViz? It\textquotesingle{}s a 3d visualization tool for ROS. \href{http://wiki.ros.org/rviz}{\texttt{ About RViz}}
+
+(quoted from tutorial) This launch file will start the RViz with the configuration file defined in the turtle\+\_\+tf2\+\_\+py package. This RViz configuration will set the world frame, enable TF visualization, and start RViz with a top-\/down view.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md174}{}\doxyparagraph{Environment Variables}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md174}
+Create a launch file {\ttfamily fixed\+\_\+broadcaster.\+launch.\+py}\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{from launch import LaunchDescription}
+\DoxyCodeLine{from launch.actions import DeclareLaunchArgument}
+\DoxyCodeLine{from launch.substitutions import EnvironmentVariable, LaunchConfiguration}
+\DoxyCodeLine{from launch\_ros.actions import Node}
+\DoxyCodeLine{}
+\DoxyCodeLine{}
+\DoxyCodeLine{def generate\_launch\_description():}
+\DoxyCodeLine{   return LaunchDescription([}
+\DoxyCodeLine{      DeclareLaunchArgument(}
+\DoxyCodeLine{            'node\_prefix',}
+\DoxyCodeLine{            default\_value=[EnvironmentVariable('USER'), '\_'],}
+\DoxyCodeLine{            description='prefix for node name'}
+\DoxyCodeLine{      ),}
+\DoxyCodeLine{      Node(}
+\DoxyCodeLine{            package='turtle\_tf2\_py',}
+\DoxyCodeLine{            executable='fixed\_frame\_tf2\_broadcaster',}
+\DoxyCodeLine{            name=[LaunchConfiguration('node\_prefix'), 'fixed\_broadcaster'],}
+\DoxyCodeLine{      ),}
+\DoxyCodeLine{   ])}
+
+\end{DoxyCode}
+ \begin{quote}
+This launch file shows the way environment variables can be called inside the launch files. Environment variables can be used to define or push namespaces for distinguishing nodes on different computers or robots. \end{quote}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md175}{}\doxyparagraph{Run the launch files}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md175}
+Finally we can start running the launch files. Before we start, modify the setup.\+py file to include all the launch {\ttfamily .py} files and the configuration {\ttfamily .yaml} files\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{import os}
+\DoxyCodeLine{from glob import glob}
+\DoxyCodeLine{from setuptools import setup}
+\DoxyCodeLine{...}
+\DoxyCodeLine{}
+\DoxyCodeLine{data\_files=[}
+\DoxyCodeLine{      ...}
+\DoxyCodeLine{      (os.path.join('share', package\_name, 'launch'),}
+\DoxyCodeLine{         glob(os.path.join('launch', '*.launch.py'))),}
+\DoxyCodeLine{      (os.path.join('share', package\_name, 'config'),}
+\DoxyCodeLine{         glob(os.path.join('config', '*.yaml'))),}
+\DoxyCodeLine{   ],}
+
+\end{DoxyCode}
+
+
+Then, build it, source it, and run it\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{colcon build}
+\DoxyCodeLine{source install/setup.bash}
+\DoxyCodeLine{ros2 launch launch\_tutorial launch\_turtlesim.launch.py}
+
+\end{DoxyCode}
+ (remember to download the rviz package)\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{sudo apt-\/get install ros-\/humble-\/rviz2}
+
+\end{DoxyCode}
+ Here\textquotesingle{}s the log message\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~/ws/src/launch\_ws\$ ros2 launch launch\_tutorial launch\_turtlesim.launch.py}
+\DoxyCodeLine{[INFO] [launch]: All log files can be found below /home/docker/.ros/log/2023-\/09-\/08-\/16-\/31-\/25-\/842726-\/ros2-\/982}
+\DoxyCodeLine{[INFO] [launch]: Default logging verbosity is set to INFO}
+\DoxyCodeLine{[INFO] [turtlesim\_node-\/1]: process started with pid [983]}
+\DoxyCodeLine{[INFO] [turtlesim\_node-\/2]: process started with pid [985]}
+\DoxyCodeLine{[INFO] [turtle\_tf2\_broadcaster-\/3]: process started with pid [987]}
+\DoxyCodeLine{[INFO] [turtle\_tf2\_broadcaster-\/4]: process started with pid [989]}
+\DoxyCodeLine{[INFO] [turtle\_tf2\_listener-\/5]: process started with pid [991]}
+\DoxyCodeLine{[INFO] [mimic-\/6]: process started with pid [993]}
+\DoxyCodeLine{[INFO] [fixed\_frame\_tf2\_broadcaster-\/7]: process started with pid [995]}
+\DoxyCodeLine{[INFO] [rviz2-\/8]: process started with pid [997]}
+\DoxyCodeLine{[ERROR] [rviz2-\/8]: process has died [pid 997, exit code 127, cmd '/opt/ros/humble/lib/rviz2/rviz2 -\/d /opt/ros/humble/share/turtle\_tf2\_py/rviz/turtle\_rviz.rviz -\/-\/ros-\/args -\/r \_\_node:=rviz2'].}
+\DoxyCodeLine{[rviz2-\/8] /opt/ros/humble/lib/rviz2/rviz2: error while loading shared libraries: libOgreMain.so.1.12.1: cannot open shared object file: No such file or directory}
+\DoxyCodeLine{[turtlesim\_node-\/1] QStandardPaths: XDG\_RUNTIME\_DIR not set, defaulting to '/tmp/runtime-\/docker'}
+\DoxyCodeLine{[turtlesim\_node-\/2] QStandardPaths: XDG\_RUNTIME\_DIR not set, defaulting to '/tmp/runtime-\/docker'}
+\DoxyCodeLine{[turtlesim\_node-\/1] [INFO] [1694161886.877540952] [sim]: Starting turtlesim with node name /sim}
+\DoxyCodeLine{[turtlesim\_node-\/2] [INFO] [1694161886.882499288] [turtlesim2.sim]: Starting turtlesim with node name /turtlesim2/sim}
+\DoxyCodeLine{[turtlesim\_node-\/2] [INFO] [1694161886.887794726] [turtlesim2.sim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]}
+\DoxyCodeLine{[turtlesim\_node-\/1] [INFO] [1694161886.890579347] [sim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]}
+\DoxyCodeLine{[turtlesim\_node-\/1] [INFO] [1694161888.724143457] [sim]: Spawning turtle [turtle2] at x=[4.000000], y=[2.000000], theta=[0.000000]}
+\DoxyCodeLine{[turtle\_tf2\_listener-\/5] [INFO] [1694161889.716628642] [listener]: Successfully spawned turtle2}
+
+\end{DoxyCode}
+ 
+
+We can see that the rviz failed launching, it is because we didn\textquotesingle{}t source the setup file first. Let\textquotesingle{}s try again\+: 
+\begin{DoxyCode}{0}
+\DoxyCodeLine{docker@ros2:\string~/ws/src/launch\_ws\$ source install/setup.bash}
+\DoxyCodeLine{docker@ros2:\string~/ws/src/launch\_ws\$ ros2 launch launch\_tutorial launch\_turtlesim.launch.py}
+\DoxyCodeLine{[INFO] [launch]: All log files can be found below /home/docker/.ros/log/2023-\/09-\/08-\/16-\/34-\/58-\/646304-\/ros2-\/1128}
+\DoxyCodeLine{[INFO] [launch]: Default logging verbosity is set to INFO}
+\DoxyCodeLine{[INFO] [turtlesim\_node-\/1]: process started with pid [1129]}
+\DoxyCodeLine{[INFO] [turtlesim\_node-\/2]: process started with pid [1131]}
+\DoxyCodeLine{[INFO] [turtle\_tf2\_broadcaster-\/3]: process started with pid [1133]}
+\DoxyCodeLine{[INFO] [turtle\_tf2\_broadcaster-\/4]: process started with pid [1135]}
+\DoxyCodeLine{[INFO] [turtle\_tf2\_listener-\/5]: process started with pid [1137]}
+\DoxyCodeLine{[INFO] [mimic-\/6]: process started with pid [1139]}
+\DoxyCodeLine{[INFO] [fixed\_frame\_tf2\_broadcaster-\/7]: process started with pid [1141]}
+\DoxyCodeLine{[INFO] [rviz2-\/8]: process started with pid [1143]}
+\DoxyCodeLine{[turtlesim\_node-\/1] QStandardPaths: XDG\_RUNTIME\_DIR not set, defaulting to '/tmp/runtime-\/docker'}
+\DoxyCodeLine{[turtlesim\_node-\/2] QStandardPaths: XDG\_RUNTIME\_DIR not set, defaulting to '/tmp/runtime-\/docker'}
+\DoxyCodeLine{[rviz2-\/8] QStandardPaths: XDG\_RUNTIME\_DIR not set, defaulting to '/tmp/runtime-\/docker'}
+\DoxyCodeLine{[turtlesim\_node-\/2] [INFO] [1694162099.931566699] [turtlesim2.sim]: Starting turtlesim with node name /turtlesim2/sim}
+\DoxyCodeLine{[turtlesim\_node-\/1] [INFO] [1694162099.933387109] [sim]: Starting turtlesim with node name /sim}
+\DoxyCodeLine{[turtlesim\_node-\/1] [INFO] [1694162099.946094681] [sim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]}
+\DoxyCodeLine{[turtlesim\_node-\/2] [INFO] [1694162099.947224387] [turtlesim2.sim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]}
+\DoxyCodeLine{[rviz2-\/8] [INFO] [1694162100.350545472] [rviz2]: Stereo is NOT SUPPORTED}
+\DoxyCodeLine{[rviz2-\/8] [INFO] [1694162100.350874073] [rviz2]: OpenGl version: 4.5 (GLSL 4.5)}
+\DoxyCodeLine{[rviz2-\/8] [INFO] [1694162100.491061667] [rviz2]: Stereo is NOT SUPPORTED}
+\DoxyCodeLine{[turtlesim\_node-\/1] [INFO] [1694162101.868198567] [sim]: Spawning turtle [turtle2] at x=[4.000000], y=[2.000000], theta=[0.000000]}
+\DoxyCodeLine{[turtle\_tf2\_listener-\/5] [INFO] [1694162102.858944977] [listener]: Successfully spawned turtle2}
+
+\end{DoxyCode}
+ \hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md176}{}\doxysection{That\textquotesingle{}s all for the required parts of the ROS2 tutorials}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ROS2_Tutorial_Review_autotoc_md176}

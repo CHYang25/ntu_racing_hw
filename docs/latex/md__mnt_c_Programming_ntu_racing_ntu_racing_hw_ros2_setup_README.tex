@@ -1,0 +1,386 @@
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md6}{}\doxysection{Introduction}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md6}
+Virtual environment are commanly used in order to avoid unnecessary environment setups as a result of different computers with different software installed. Here docker is adoped as a comprehensive virtual environment that is applicable for every software.
+
+We provide custom images for using ros, matlab, etc. on desktop computers or rpi, and handy bash scripts to control these virtual environment.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md7}{}\doxysection{Before you start}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md7}
+Install docker on your computer, please checkout \href{https://docs.docker.com/engine/install/ubuntu/}{\texttt{ Install Docker Engine on Ubuntu}}\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md8}{}\doxysection{Usage}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md8}
+In order to use docker, first you have to build an image, and then create a container.
+
+There two bash scripts provided to simplify the use of docker virtual environment, namely {\ttfamily build\+\_\+image.\+sh} for building images and {\ttfamily start\+\_\+container.\+sh} for managing containers.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md9}{}\doxysubsection{build\+\_\+image.\+sh}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md9}
+This script is used for building a docker image for a container to run on, use this script by
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ \{bash=\}}
+\DoxyCodeLine{./build\_image.sh}
+
+\end{DoxyCode}
+
+
+you will be prompted to choose which docker image from dockerfiles in {\ttfamily Dockerfile} to build from.
+
+\begin{quote}
+Note\+: The image name will be the same as the {\ttfamily dockerfile}\textquotesingle{}s name. \end{quote}
+If an existing image has the same name as the {\ttfamily dockerfile}\textquotesingle{}s name and the tag is {\ttfamily latest}, an option will prompt you to choose whether to change the existing image\textquotesingle{}s tag to {\ttfamily older\+\_\+versionX} and build the new image with tag {\ttfamily latest}.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md10}{}\doxysubsubsection{Using bash arguments}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md10}
+The script also support bash arguemnts as a short hand
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ \{bash=\}}
+\DoxyCodeLine{./build\_image.sh IMAGE\_FILE REPLACE\_OPTION}
+
+\end{DoxyCode}
+
+
+where {\ttfamily IMAGE\+\_\+\+FILE} is the dockerfile name in directory {\ttfamily Dockerfile} and {\ttfamily REPLACE\+\_\+\+OPTION}(y/n) for controlling whether to change the tag of an image with same name to older vison.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md11}{}\doxysubsubsection{Choosing which image to build}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md11}
+The following are provided images\+:
+\begin{DoxyItemize}
+\item fun\+\_\+time\+\_\+with\+\_\+arthur\+: image with ros and machine learning libraries
+\item ros\+\_\+host\+: image with ros for desktop use
+\item ros\+\_\+matlab\+: image with ros and matlabfor desktop use
+\item ros\+\_\+rpi\+: image with ros for use on raspberry pi
+\end{DoxyItemize}
+
+For more information, please refer to {\ttfamily Image environment} in latter section.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md12}{}\doxysubsection{start\+\_\+container.\+sh}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md12}
+This script is used for managing a docker container, use this script by
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ \{bash=\}}
+\DoxyCodeLine{./start\_container.sh}
+
+\end{DoxyCode}
+
+
+you will be prompted by different commands to manage docker containers\+:\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md13}{}\doxysubsubsection{create}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md13}
+This command create a container from existing images.
+
+\begin{quote}
+Note the host of the container will be the container\textquotesingle{}s name and password in the container for default user {\ttfamily docker} is {\ttfamily docker}. \end{quote}
+\begin{quote}
+Note\+: In order to let the container be connectable to the interent, port {\ttfamily 8080} with host ip {\ttfamily 127.\+0.\+1.\+1} is designated for the container, so you can only run a container at a time that was created by {\ttfamily start\+\_\+container.\+sh} script. \end{quote}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md14}{}\doxysubsubsection{run}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md14}
+This command run a stopped container.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md15}{}\doxysubsubsection{shell}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md15}
+This command attach to the shell of a container, if the container is not running, the script will run it first.
+
+\begin{quote}
+Note\+: If you want to exit container\textquotesingle{}s shell, simply use {\ttfamily exit} command. \end{quote}
+\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md16}{}\doxysubsubsection{stop}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md16}
+This stop a running container.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md17}{}\doxysubsubsection{Using bash arguments}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md17}
+The script also support bash arguments as a short hand
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ \{bash=\}}
+\DoxyCodeLine{./start\_container.sh COMMAND CONTAINER\_NAME IMAGE\_NAME}
+
+\end{DoxyCode}
+
+
+where {\ttfamily COMMAND} is the command listed above, {\ttfamily CONTAINER\+\_\+\+NAME} is the container you want to manage, and {\ttfamily IMAGE\+\_\+\+NAME} is for building container with specific image name.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md18}{}\doxysubsubsection{Specific changes for deploying to rpi}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md18}
+When creating a container from {\ttfamily ros\+\_\+rpi} image, there will be some sepcific changes\+:
+
+
+\begin{DoxyEnumerate}
+\item The network of the container and the host are not separated
+\item The default user of the container is root
+\end{DoxyEnumerate}
+
+In another word, creating and using this container is as if you are always root on the host, which is very dangerious, so please be careful!\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md19}{}\doxysection{Image environment}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md19}
+The following is the description of the image environments.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md20}{}\doxysubsection{fun\+\_\+time\+\_\+with\+\_\+arthur}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md20}
+The image is based on 11.\+7.\+0-\/base-\/ubuntu22.\+04, which is an ubuntu 20.\+04 image with Nvida cuda support and has the following applications installed\+:
+
+
+\begin{DoxyItemize}
+\item bash-\/completion -\/$>$ bash auto-\/complete
+\item build-\/essential -\/$>$ compiler
+\item byobu -\/$>$ terminal multiplexer
+\item ca-\/certificates -\/$>$ certificate manager
+\item curl -\/$>$ internet commuincation library
+\item feh -\/$>$ image viewer
+\item git -\/$>$ version control
+\item gnupg2 -\/$>$ encryption
+\item keyboard-\/configuration -\/$>$ keyboard configuration
+\item locales -\/$>$ configure locale
+\item libgl1-\/mesa-\/dev -\/$>$ mujoco-\/py dependancy
+\item libgl1-\/mesa-\/glx -\/$>$ mujoco-\/py dependancy
+\item libglew-\/dev -\/$>$ mujoco-\/py dependancy
+\item libglfw3 -\/$>$ mujoco-\/py dependancy
+\item libosmesa6-\/dev -\/$>$ mujoco-\/py dependancy
+\item lsb-\/release -\/$>$ linux standard base
+\item net-\/tools -\/$>$ network configurator
+\item nvidia-\/cuda-\/toolkit -\/$>$ for using gpu
+\item patchelf -\/$>$ mujoco-\/py dependancy
+\item python3-\/colcon-\/common-\/extensions -\/$>$ build ros2 workspace
+\item python3-\/pip -\/$>$ python package manager
+\item python3-\/rosdep -\/$>$ ros dependencies manager
+\item ros-\/humble-\/ros2-\/controllers -\/$>$ ros2 controllers
+\item ros-\/humble-\/desktop-\/full -\/$>$ ros2
+\item ros-\/humble-\/gazebo-\/ros-\/pkgs -\/$>$ gazebo
+\item ros-\/humble-\/joint-\/state-\/publisher-\/gui -\/$>$ ros2 gui joint state publisher
+\item ros-\/humble-\/plotjuggler -\/$>$ ros2 plotting tool
+\item ros-\/humble-\/ros2-\/controllers -\/$>$ ros2 controllers
+\item ros-\/humble-\/ros2-\/control-\/test-\/assets -\/$>$ test assets for ros2\+\_\+control
+\item ros-\/humble-\/ros2-\/socketcan -\/$>$ ros2 can driver
+\item ros-\/humble-\/rqt-\/joint-\/trajectory-\/controller -\/$>$ controlling joint using gui
+\item ros-\/humble-\/teleop-\/twist-\/keyboard -\/$>$ ros2 keyboard control
+\item sudo -\/$>$ executing commands as root
+\item swig -\/$>$ wrapper for C/\+C++ to connect to scripting language
+\item tmux -\/$>$ terminal multiplexer
+\item tzdata -\/$>$ timezone
+\item vim -\/$>$ command line text editor
+\item wget -\/$>$ downloader
+\end{DoxyItemize}
+
+And python packages\+:
+
+
+\begin{DoxyItemize}
+\item envpool -\/$>$ simulating envrionment manager (but faster than opan\+AI-\/gym)
+\item gym\mbox{[}mujoco\mbox{]} -\/$>$ simulating envrionment manager for mujoco (may be replaced by envpool)
+\item mujoco-\/py -\/$>$ bindings for mujoco that\textquotesingle{}s required for opne\+AI-\/gym
+\item pygame -\/$>$ simulation environment for open\+AI gym
+\item pythorch -\/$>$ machine learing engine
+\item tqdm -\/$>$ progress bar
+\item visdom -\/$>$ visualization tool for pytorch
+\end{DoxyItemize}
+
+And other packages that are not installed traditionally
+
+
+\begin{DoxyItemize}
+\item mujoco -\/$>$ simulating environment
+\item micro\+\_\+ros\+\_\+setup -\/$>$ micro ros support
+\end{DoxyItemize}\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md21}{}\doxysubsection{ros\+\_\+host}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md21}
+The image is based on ubuntu 20.\+04 with the following applications installed\+:
+
+
+\begin{DoxyItemize}
+\item bash-\/completion -\/$>$ bash auto-\/complete
+\item build-\/essential -\/$>$ compiler
+\item byobu -\/$>$ terminal multiplexer
+\item ca-\/certificates -\/$>$ certificate manager
+\item curl -\/$>$ internet commuincation library
+\item feh -\/$>$ image viewer
+\item git -\/$>$ version control
+\item gnupg2 -\/$>$ encryption
+\item gpsd -\/$>$ gps daemon
+\item gpsd-\/clients -\/$>$ gps client
+\item keyboard-\/configuration -\/$>$ keyboard configuration
+\item lsb-\/release -\/$>$ linux standard base
+\item net-\/tools -\/$>$ network configurator
+\item python3-\/pip -\/$>$ python package manager
+\item python3-\/rosdep -\/$>$ ros dependencies manager
+\item python3-\/rosinstall -\/$>$ ros installation tool
+\item python3-\/rosinstall-\/generator -\/$>$ ros install file generator
+\item python3-\/wstool -\/$>$ ros version control
+\item ros-\/noetic-\/desktop-\/full -\/$>$ ros
+\item ros-\/noetic-\/gps-\/common -\/$>$ for using gps with ros
+\item ros-\/noetic-\/gpsd-\/client -\/$>$ for using gps with ros
+\item ros-\/noetic-\/teleop-\/twist-\/keyboard -\/$>$ ros keyboard control
+\item ros-\/noetic-\/rqt-\/multiplot -\/$>$ ros multi-\/plotting tool
+\item ros-\/noetic-\/socketcan-\/bridge -\/$>$ ros can tool
+\item swig -\/$>$ wrapper for C/\+C++ to connect to scripting language
+\item tmux -\/$>$ terminal multiplexer
+\item tzdata -\/$>$ timezone
+\item vim -\/$>$ command line text editor
+\item wget -\/$>$ downloader
+\end{DoxyItemize}
+
+And python packages
+
+
+\begin{DoxyItemize}
+\item gps3 -\/$>$ gps library
+\item RPi.\+GPIO -\/$>$ accessing rpi gpio
+\end{DoxyItemize}
+
+And other packages that are not installed traditionally
+
+
+\begin{DoxyItemize}
+\item wiringpi -\/$>$ gpio library for rpi
+\end{DoxyItemize}\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md22}{}\doxysubsection{ros\+\_\+matlab}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md22}
+The image is based on ubuntu 20.\+04 with the following applications installed\+:
+
+
+\begin{DoxyItemize}
+\item bash-\/completion -\/$>$ bash auto-\/complete
+\item build-\/essential -\/$>$ compiler
+\item byobu -\/$>$ terminal multiplexer
+\item ca-\/certificates -\/$>$ certificate manager
+\item curl -\/$>$ internet commuincation library
+\item feh -\/$>$ image viewer
+\item git -\/$>$ version control
+\item gnupg2 -\/$>$ encryption
+\item gpsd -\/$>$ gps daemon
+\item gpsd-\/clients -\/$>$ gps client
+\item keyboard-\/configuration -\/$>$ keyboard configuration
+\item lsb-\/release -\/$>$ linux standard base
+\item net-\/tools -\/$>$ network configurator
+\item python3-\/pip -\/$>$ python package manager
+\item python3-\/rosdep -\/$>$ ros dependencies manager
+\item python3-\/rosinstall -\/$>$ ros installation tool
+\item python3-\/rosinstall-\/generator -\/$>$ ros install file generator
+\item python3-\/wstool -\/$>$ ros version control
+\item ros-\/noetic-\/desktop-\/full -\/$>$ ros
+\item ros-\/noetic-\/gps-\/common -\/$>$ for using gps with ros
+\item ros-\/noetic-\/gpsd-\/client -\/$>$ for using gps with ros
+\item ros-\/noetic-\/teleop-\/twist-\/keyboard -\/$>$ ros keyboard control
+\item ros-\/noetic-\/rqt-\/multiplot -\/$>$ ros multi-\/plotting tool
+\item ros-\/noetic-\/socketcan-\/bridge -\/$>$ ros can tool
+\item swig -\/$>$ wrapper for C/\+C++ to connect to scripting language
+\item tmux -\/$>$ terminal multiplexer
+\item tzdata -\/$>$ timezone
+\item vim -\/$>$ command line text editor
+\item wget -\/$>$ downloader
+\end{DoxyItemize}
+
+And python packages
+
+
+\begin{DoxyItemize}
+\item gps3 -\/$>$ gps library
+\item RPi.\+GPIO -\/$>$ accessing rpi gpio
+\end{DoxyItemize}
+
+And matlab products\+:
+
+
+\begin{DoxyItemize}
+\item Control\+\_\+\+System\+\_\+\+Toolbox
+\item MATLAB
+\item MATLAB\+\_\+\+Coder
+\item ROS\+\_\+\+Toolbox
+\item Simulink
+\item Simulink\+\_\+\+Coder
+\item Simscape
+\item Simscape\+\_\+\+Driveline
+\item Simescape\+\_\+\+Electrical
+\item Symbolic\+\_\+\+Math\+\_\+\+Toolbox
+\item Vehicle\+\_\+\+Dynamics\+\_\+\+Blockset
+\end{DoxyItemize}
+
+And other packages that are not installed traditionally
+
+
+\begin{DoxyItemize}
+\item wiringpi -\/$>$ gpio library for rpi
+\end{DoxyItemize}\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md23}{}\doxysubsection{ros\+\_\+rpi}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md23}
+The image is based on ubuntu 20.\+04 with the following applications installed\+:
+
+
+\begin{DoxyItemize}
+\item bash-\/completion -\/$>$ bash auto-\/complete
+\item build-\/essential -\/$>$ compiler
+\item byobu -\/$>$ terminal multiplexer
+\item ca-\/certificates -\/$>$ certificate manager
+\item curl -\/$>$ internet commuincation library
+\item feh -\/$>$ image viewer
+\item git -\/$>$ version control
+\item gnupg2 -\/$>$ encryption
+\item gpsd -\/$>$ gps daemon
+\item gpsd-\/clients -\/$>$ gps client
+\item keyboard-\/configuration -\/$>$ keyboard configuration
+\item libyaml-\/cpp-\/dev -\/$>$ using yaml in cpp
+\item lsb-\/release -\/$>$ linux standard base
+\item net-\/tools -\/$>$ network configurator
+\item python3-\/can -\/$>$ can library
+\item python3-\/pip -\/$>$ python package manager
+\item python3-\/rosdep -\/$>$ ros dependencies manager
+\item python3-\/rosinstall -\/$>$ ros installation tool
+\item python3-\/rosinstall-\/generator -\/$>$ ros install file generator
+\item python3-\/serial -\/$>$ accessing serial port
+\item python3-\/wstool -\/$>$ ros version control
+\item ros-\/noetic-\/ros\+\_\+base -\/$>$ ros base version
+\item ros-\/noetic-\/gps-\/common -\/$>$ for using gps with ros
+\item ros-\/noetic-\/gpsd-\/client -\/$>$ for using gps with ros
+\item ros-\/noetic-\/socketcan-\/bridge -\/$>$ ros can tool
+\item swig -\/$>$ wrapper for C/\+C++ to connect to scripting language
+\item tmux -\/$>$ terminal multiplexer
+\item tzdata -\/$>$ timezone
+\item vim -\/$>$ command line text editor
+\item wget -\/$>$ downloader
+\end{DoxyItemize}
+
+And python packages
+
+
+\begin{DoxyItemize}
+\item gps3 -\/$>$ gps library
+\item RPi.\+GPIO -\/$>$ accessing rpi gpio
+\end{DoxyItemize}
+
+And other packages that are not installed traditionally
+
+
+\begin{DoxyItemize}
+\item wiringpi -\/$>$ gpio library for rpi
+\end{DoxyItemize}\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md24}{}\doxysubsection{ros2\+\_\+host}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md24}
+The image is based on ubuntu 22.\+04 with the following applications installed\+:
+
+
+\begin{DoxyItemize}
+\item bash-\/completion -\/$>$ bash auto-\/complete
+\item build-\/essential -\/$>$ compiler
+\item byobu -\/$>$ terminal multiplexer
+\item ca-\/certificates -\/$>$ certificate manager
+\item curl -\/$>$ internet commuincation library
+\item feh -\/$>$ image viewer
+\item git -\/$>$ version control
+\item gnupg2 -\/$>$ encryption
+\item keyboard-\/configuration -\/$>$ keyboard configuration
+\item locales -\/$>$ configure locale
+\item lsb-\/release -\/$>$ linux standard base
+\item net-\/tools -\/$>$ network configurator
+\item python3-\/pip -\/$>$ python package manager
+\item python3-\/rosdep -\/$>$ ros2 dependencies manager
+\item ros-\/humble-\/ros2-\/controllers -\/$>$ ros2 controllers
+\item ros-\/humble-\/desktop-\/full -\/$>$ ros2
+\item ros-\/humble-\/gazebo-\/ros-\/pkgs -\/$>$ gazebo
+\item ros-\/humble-\/plotjuggler -\/$>$ ros2 plotting tool
+\item ros-\/humble-\/ros2-\/controllers -\/$>$ ros2 controllers
+\item ros-\/humble-\/ros2-\/control-\/test-\/assets -\/$>$ test assets for ros2\+\_\+control
+\item ros-\/humble-\/ros2-\/socketcan -\/$>$ ros2 can driver
+\item ros-\/humble-\/teleop-\/twist-\/keyboard -\/$>$ ros2 keyboard control
+\item swig -\/$>$ wrapper for C/\+C++ to connect to scripting language
+\item tmux -\/$>$ terminal multiplexer
+\item tzdata -\/$>$ timezone
+\item vim -\/$>$ command line text editor
+\item wget -\/$>$ downloader
+\end{DoxyItemize}\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md25}{}\doxysubsection{ROS enviroment}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md25}
+There will be ros workspace directory preconfigured in {\ttfamily /home/docker/ws} and its subdirectory {\ttfamily src} mounted to the host as {\ttfamily ./packages/\+CONTAINER\+\_\+\+NAME}.
+
+The workspace {\ttfamily $\sim$/ws} has already been build(catkin\+\_\+make) once, so there will also be {\ttfamily build} and {\ttfamily devel} directory beside the {\ttfamily src}.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md26}{}\doxysubsection{ROS1}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md26}
+The general ros environment setup
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ \{bash=\}}
+\DoxyCodeLine{source /opt/ros/noetic/setup.bash}
+\DoxyCodeLine{source \string~/ws/devel/setup.bash}
+
+\end{DoxyCode}
+
+
+has already being included in {\ttfamily $\sim$/.bashrc} file, so there is no need to source them everytime.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md27}{}\doxysubsection{ROS2}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md27}
+The general ros2 environment setup
+
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{ \{bash=\}}
+\DoxyCodeLine{source /opt/ros/humble/setup.bash}
+\DoxyCodeLine{source \string~/ws/install/setup.bash}
+
+\end{DoxyCode}
+
+
+has already being included in {\ttfamily $\sim$/.bashrc} file, so there is no need to source them everytime.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md28}{}\doxysubsection{Support for using nvidia gpu in docker}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md28}
+The script {\ttfamily start\+\_\+container.\+sh} support for using gpu inside docker container when creating container, and will automatically create containers if your docker have nvidia docker support. Checkout how to setup nvidia docker support\+: \href{https://www.howtogeek.com/devops/how-to-use-an-nvidia-gpu-with-docker-containers/}{\texttt{ How to Use an NVIDIA GPU with Docker Containers}}.\hypertarget{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md29}{}\doxysection{Known Issues}\label{md__mnt_c_Programming_ntu_racing_ntu_racing_hw_ros2_setup_README_autotoc_md29}
+
+\begin{DoxyEnumerate}
+\item We have some issues when building on WSL. Such as using byobu and visualize environments.
+\item Inorder to use matlab, you first have to have the license and the license for matlab cloud use. Campus-\/wide licenses are already configured for cloud use, if your authorization failed with error code {\ttfamily 4402}, please contact your license provider.
+\item If it is on {\bfseries{Debian}}, follow the steps to solve libseccomp\+:
+
+\`{}\`{}\`{}bash= \#download from \href{https://packages.debian.org/sid/libseccomp2}{\texttt{ https\+://packages.\+debian.\+org/sid/libseccomp2}}, for example\+: wget \href{http://ftp.tw.debian.org/debian/pool/main/libs/libseccomp/libseccomp2_2.5.3-2_armhf.deb}{\texttt{ http\+://ftp.\+tw.\+debian.\+org/debian/pool/main/libs/libseccomp/libseccomp2\+\_\+2.\+5.\+3-\/2\+\_\+armhf.\+deb}} sudo dpkg -\/i libseccomp2\+\_\+2.\+5.\+3-\/2\+\_\+armhf.\+deb ref\+: \href{https://askubuntu.com/questions/1263284/apt-update-throws-signature-error-in-ubuntu-20-04-container-on-arm}{\texttt{ https\+://askubuntu.\+com/questions/1263284/apt-\/update-\/throws-\/signature-\/error-\/in-\/ubuntu-\/20-\/04-\/container-\/on-\/arm}} \`{}\`{}\`{} 
+\end{DoxyEnumerate}
